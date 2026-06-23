@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contentive Studio × Panadería Venezolana Donna</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+:root {
+  --bg: #0e0e0e;
+  --surface: #141414;
+  --surface2: #1c1c1c;
+  --surface3: #242424;
+  --border: #2a2a2a;
+  --border2: #333;
+  --orange: #F5A623;
+  --lime: #B8E04A;
+  --text: #f0ede8;
+  --muted: #888;
+  --muted2: #444;
+  --red: #ff5555;
+  --green: #4ade80;
+  --blue: #60a5fa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  padding-bottom: 140px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.header-logo span { color: var(--orange); }
+.header-step {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  position: sticky;
+  top: 57px;
+  z-index: 199;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--lime));
+  transition: width .5s ease;
+  width: 20%;
+}
+
+/* ── SECCIONES ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(245,166,35,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-label {
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.hero h1 em { color: var(--orange); font-style: normal; }
+.hero-sub {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+}
+.btn-primary {
+  background: var(--orange);
+  color: #0e0e0e;
+  border: none;
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-primary:hover { background: #f7b84a; transform: translateY(-2px); }
+
+/* ── ESTADO ACTUAL ── */
+.context-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 80px 32px;
+}
+.context-tag {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 32px;
+}
+.context-wrap h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.context-wrap .intro {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 48px;
+}
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.plan-card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+.badge-orange { background: rgba(245,166,35,.15); color: var(--orange); border: 1px solid rgba(245,166,35,.3); }
+.badge-lime { background: rgba(184,224,74,.12); color: var(--lime); border: 1px solid rgba(184,224,74,.25); }
+.badge-muted { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+.plan-items { display: flex; flex-direction: column; gap: 12px; }
+.plan-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.plan-item-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.evolution-card {
+  background: linear-gradient(135deg, rgba(245,166,35,.08), rgba(184,224,74,.05));
+  border: 1px solid rgba(245,166,35,.25);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 40px;
+}
+.evolution-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--orange);
+}
+.evolution-card p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.evolution-card p strong { color: var(--text); font-weight: 500; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 14px 28px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+/* ── CATÁLOGO ── */
+.catalog-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 32px;
+}
+.catalog-header { margin-bottom: 40px; }
+.catalog-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.catalog-header p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+/* Bloque de categoría */
+.cat-block { margin-bottom: 32px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+.cat-header {
+  background: var(--surface);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background .2s;
+  gap: 12px;
+}
+.cat-header:hover { background: var(--surface2); }
+.cat-header-left { display: flex; align-items: center; gap: 14px; }
+.cat-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.cat-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+.cat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.cat-toggle {
+  color: var(--muted);
+  font-size: 18px;
+  transition: transform .3s;
+  flex-shrink: 0;
+}
+.cat-block.open .cat-toggle { transform: rotate(180deg); }
+.cat-body { display: none; border-top: 1px solid var(--border); }
+.cat-block.open .cat-body { display: block; }
+
+/* Servicio dentro de categoría */
+.service-item {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background .2s;
+}
+.service-item:last-child { border-bottom: none; }
+.service-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.service-info { flex: 1; min-width: 0; }
+.service-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.service-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+.service-why {
+  font-size: 12px;
+  color: var(--lime);
+  line-height: 1.6;
+  background: rgba(184,224,74,.07);
+  border-left: 2px solid var(--lime);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 12px;
+}
+.service-why strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.service-metrics {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.metric-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Selector de variante (packs, opciones) */
+.variant-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.variant-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+}
+.variant-btn:hover { border-color: var(--orange); color: var(--text); }
+.variant-btn.selected { border-color: var(--orange); background: rgba(245,166,35,.12); color: var(--orange); }
+
+/* Precio y acción */
+.service-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 160px;
+}
+.service-price {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.service-price.loading { color: var(--muted); font-size: 13px; font-weight: 400; }
+.service-price.pendiente { color: var(--muted); font-size: 13px; font-weight: 400; font-family: 'DM Sans', sans-serif; }
+.price-label { font-size: 10px; color: var(--muted); letter-spacing: .08em; }
+
+.add-btn {
+  background: var(--orange);
+  color: #0e0e0e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.add-btn:hover { background: #f7b84a; }
+.add-btn.added {
+  background: transparent;
+  color: var(--lime);
+  border: 1px solid var(--lime);
+}
+.add-btn.added:hover { background: rgba(184,224,74,.1); }
+.future-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+.future-btn:hover { border-color: var(--blue); color: var(--blue); }
+.future-btn.marked { color: var(--blue); border-color: var(--blue); background: rgba(96,165,250,.08); }
+
+/* ── CARRITO FLOTANTE ── */
+.cart-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(20,20,20,.97);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  padding: 14px 32px;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transform: translateY(100%);
+  transition: transform .3s ease;
+}
+.cart-bar.visible { transform: translateY(0); }
+.cart-info { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.cart-count {
+  background: var(--orange);
+  color: #0e0e0e;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.cart-label { font-size: 13px; color: var(--muted); }
+.cart-total {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+}
+.cart-total-label { font-size: 11px; color: var(--muted); }
+.cart-total-wrap { text-align: right; }
+.cart-actions { display: flex; gap: 10px; }
+
+/* ── REVISIÓN ── */
+.review-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 60px 32px;
+}
+.review-wrap h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.review-wrap .sub { font-size: 15px; color: var(--muted); margin-bottom: 40px; line-height: 1.6; }
+.review-group { margin-bottom: 32px; }
+.review-group-title {
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.review-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.review-item-name { font-size: 14px; font-weight: 500; }
+.review-item-variant { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.review-item-price {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+.review-item.future {
+  opacity: .6;
+  border-style: dashed;
+  border-color: var(--blue);
+}
+.review-item.future .review-item-price { color: var(--blue); font-size: 12px; }
+.review-total-box {
+  background: linear-gradient(135deg, rgba(245,166,35,.1), rgba(184,224,74,.06));
+  border: 1px solid rgba(245,166,35,.3);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.review-total-box .label { font-size: 14px; color: var(--muted); }
+.review-total-box .amount {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--orange);
+}
+.review-total-box .period { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  transition: color .15s;
+}
+.remove-btn:hover { color: var(--red); }
+
+/* ── CONFIRMACIÓN ── */
+.confirm-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 60px 32px;
+}
+.confirm-wrap h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.confirm-wrap .sub { font-size: 15px; color: var(--muted); margin-bottom: 40px; line-height: 1.6; }
+.form-field { margin-bottom: 20px; }
+.form-label { font-size: 12px; color: var(--muted); letter-spacing: .08em; margin-bottom: 8px; display: block; }
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+.form-input:focus { border-color: var(--orange); }
+textarea.form-input { resize: vertical; min-height: 100px; }
+.summary-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.summary-preview strong { color: var(--text); }
+
+/* ── ÉXITO ── */
+.success-wrap {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  text-align: center;
+}
+.success-icon {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(74,222,128,.12);
+  border: 2px solid rgba(74,222,128,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin-bottom: 32px;
+}
+.success-wrap h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.success-wrap p { font-size: 15px; color: var(--muted); max-width: 460px; line-height: 1.7; }
+
+/* ── UTILS ── */
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+.text-orange { color: var(--orange); }
+.text-lime { color: var(--lime); }
+.text-muted { color: var(--muted); }
+.fw700 { font-weight: 700; }
+.mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+.empty-cart {
+  text-align: center;
+  padding: 60px 32px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.empty-cart .icon { font-size: 40px; margin-bottom: 16px; }
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(14,14,14,.9);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 999;
+  font-size: 14px;
+  color: var(--muted);
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 2px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <span>Cargando tu propuesta personalizada...</span>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-logo">Contentive <span>Studio</span></div>
+  <div class="header-step" id="headerStep">Bienvenida</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ═══════════════════════════════════════════
+     PASO 1 — BIENVENIDA
+═══════════════════════════════════════════ -->
+<section class="section active" id="sec-bienvenida">
+  <div class="hero">
+    <div class="hero-label">Propuesta personalizada · Contentive Studio</div>
+    <h1>Hola,<br><em>Lizabeth</em> 👋</h1>
+    <p class="hero-sub">
+      Preparamos para Donna un armador interactivo de propuesta. Revisá cada servicio, entendé qué incluye, y armá el plan que más se adapte a tu momento actual — a tu ritmo y a tu presupuesto.
+    </p>
+    <button class="btn-primary" onclick="goTo('context')">Empezar a armar mi plan →</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PASO 2 — CONTEXTO ACTUAL
+═══════════════════════════════════════════ -->
+<section class="section" id="sec-context">
+  <div class="context-wrap">
+    <div class="context-tag">Tu situación actual</div>
+    <h2>Lo que venimos construyendo juntos</h2>
+    <p class="intro">
+      Hace tiempo que el equipo de Contentive trabaja con Donna. Este es el momento de revisar desde dónde venimos y pensar hacia dónde queremos ir.
+    </p>
+
+    <div class="plan-card">
+      <div class="plan-card-header">
+        <div class="plan-card-title">Plan actual — Transitorio</div>
+        <span class="badge badge-orange">Activo hoy</span>
+      </div>
+      <div class="plan-items">
+        <div class="plan-item"><div class="plan-item-dot"></div><span>5 reels mensuales — producción completa (idea, guion, cámara, edición) para Instagram y TikTok</span></div>
+        <div class="plan-item"><div class="plan-item-dot"></div><span>Historias interdiarias — diseño y publicación en Instagram</span></div>
+        <div class="plan-item"><div class="plan-item-dot"></div><span>Gestión integral de redes — estrategia, diseño de piezas, copys y community management</span></div>
+        <div class="plan-item"><div class="plan-item-dot"></div><span>Planificación mensual de contenido y presentación de resultados</span></div>
+      </div>
+    </div>
+
+    <div class="evolution-card">
+      <h3>¿Por qué es momento de dar el siguiente paso?</h3>
+      <p>
+        Un plan de redes sociales te dio presencia digital. Pero <strong>Donna tiene mucho más para decir y más canales por conquistar</strong>. La comunicación de una marca como la tuya no puede vivir solo en el feed: hay clientes que te buscan en Google, otros que responden mejor al mail, y otros que se enamoran de una experiencia física en el local.<br><br>
+        Lo que armamos acá es un menú completo de lo que Contentive puede hacer por Donna — vos elegís con qué avanzar ahora y qué queda para una próxima etapa. <strong>Sin compromisos, sin presión. Solo claridad.</strong>
+      </p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goTo('catalog')">Ver los servicios disponibles →</button>
+      <button class="btn-secondary" onclick="goTo('bienvenida')">← Volver</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PASO 3 — CATÁLOGO / CARRITO
+═══════════════════════════════════════════ -->
+<section class="section" id="sec-catalog">
+  <div class="catalog-wrap">
+    <div class="catalog-header">
+      <div class="context-tag">Armá tu plan</div>
+      <h2>¿Qué querés que Contentive haga por Donna?</h2>
+      <p>Cada servicio tiene una descripción completa y la razón por la que lo recomendamos para tu marca. Agregá los que te interesen al carrito, marcá como "para el futuro" los que no son urgentes, y revisá el total antes de enviarnos tu propuesta.</p>
+    </div>
+
+    <!-- Los bloques se generan dinámicamente con JS -->
+    <div id="catalogContainer"></div>
+
+    <div class="btn-row mt24" style="justify-content:flex-end">
+      <button class="btn-secondary" onclick="goTo('context')">← Atrás</button>
+      <button class="btn-primary" onclick="goToReview()">Ver mi propuesta →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PASO 4 — REVISIÓN
+═══════════════════════════════════════════ -->
+<section class="section" id="sec-review">
+  <div class="review-wrap">
+    <div class="context-tag">Tu propuesta</div>
+    <h2>Revisá lo que armaste</h2>
+    <p class="sub">Estos son los servicios que seleccionaste. Podés quitar ítems antes de enviar. Los marcados "para el futuro" aparecen separados — no se suman al total mensual.</p>
+    <div id="reviewContainer"></div>
+    <div class="btn-row mt24">
+      <button class="btn-secondary" onclick="goTo('catalog')">← Seguir eligiendo</button>
+      <button class="btn-primary" onclick="goTo('confirm')">Confirmar y enviar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PASO 5 — CONFIRMACIÓN
+═══════════════════════════════════════════ -->
+<section class="section" id="sec-confirm">
+  <div class="confirm-wrap">
+    <div class="context-tag">Último paso</div>
+    <h2>¡Ya casi está! 🎉</h2>
+    <p class="sub">Revisá tus datos y agregá un mensaje si querés. Con un clic le llega a Pedro tu propuesta completa.</p>
+
+    <div class="form-field">
+      <label class="form-label">Nombre</label>
+      <input type="text" class="form-input" id="inputNombre" value="Lizabeth" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Mail de contacto</label>
+      <input type="email" class="form-input" id="inputMail" value="" placeholder="tu@mail.com" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Mensaje opcional</label>
+      <textarea class="form-input" id="inputMensaje" placeholder="¿Alguna aclaración o pregunta para Pedro?"></textarea>
+    </div>
+
+    <div class="summary-preview" id="summaryPreview"></div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo('review')">← Revisar</button>
+      <button class="btn-primary" id="sendBtn" onclick="enviarPropuesta()">Enviar mi propuesta →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     ÉXITO
+═══════════════════════════════════════════ -->
+<section class="section" id="sec-success">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h2>¡Propuesta enviada!</h2>
+    <p>Pedro ya recibió tu propuesta por WhatsApp y por mail. En menos de 24 horas hábiles te va a responder con los próximos pasos. ¡Gracias, Lizabeth!</p>
+  </div>
+</section>
+
+<!-- CARRITO FLOTANTE -->
+<div class="cart-bar" id="cartBar">
+  <div class="cart-info">
+    <div class="cart-count" id="cartCount">0</div>
+    <div>
+      <div class="cart-label">servicios seleccionados</div>
+    </div>
+  </div>
+  <div class="cart-total-wrap">
+    <div class="cart-total-label">Total mensual estimado</div>
+    <div class="cart-total" id="cartTotal">$ 0</div>
+  </div>
+  <div class="cart-actions">
+    <button class="btn-primary" onclick="goToReview()">Ver propuesta →</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbym5kMwEQjpVyqwOL0Z0ypYIo5dLiqf_cie-NeJk0jA0SDw4YCQowg19ybs8pxQ3uGBwA/exec';
+const WA_NUMBER = '5491135701336';
+const STORAGE_KEY = 'donna_propuesta_v1';
+
+// ══════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════
+let precios = {};
+let cart = {};    // { serviceKey: { name, price, variant, catName } }
+let future = {};  // { serviceKey: { name, price, variant, catName } }
+
+// ══════════════════════════════════════════════
+// CATÁLOGO DE SERVICIOS
+// Cada servicio tiene: id, name, desc, why, metrics, variants(opcional), priceKey(s)
+// ══════════════════════════════════════════════
+const CATALOG = [
+  {
+    id: 'redes',
+    icon: '📱',
+    color: 'rgba(245,166,35,.15)',
+    title: 'Gestión Integral de Redes Sociales',
+    sub: 'Estrategia · Producción completa · Diseño · Community Management · Métricas',
+    services: [
+      {
+        id: 'redes_pack',
+        name: 'Pack mensual de gestión completa',
+        recommended: true,
+        desc: 'El equipo de Contentive se hace cargo de todo: estrategia mensual, producción audiovisual (guion, cámara y edición), diseño gráfico de todas las piezas, redacción de copys, publicación en horarios óptimos, gestión de la comunidad y reporte trimestral de métricas. Nada se publica sin que vos lo apruebes primero.',
+        why: 'Donna necesita una voz coherente todos los días. Cada publicación tiene un propósito estratégico detrás — no publicamos por publicar.',
+        metrics: ['Alcance mensual', 'Tasa de engagement', 'Crecimiento de seguidores', 'Reporte trimestral'],
+        variants: [
+          { label: 'Pack Inicial · 4 piezas/mes', key: 'redes_x4' },
+          { label: 'Pack Básico · 8 piezas/mes', key: 'redes_x8' },
+          { label: 'Pack Avanzado · 12 piezas/mes', key: 'redes_x12' },
+          { label: 'Pack Premium · 16 piezas/mes', key: 'redes_x16' },
+          { label: 'Pack Ultra · 20 piezas/mes', key: 'redes_x20' },
+        ],
+        defaultVariant: 1
+      },
+      {
+        id: 'addon_historias',
+        name: 'Add-on: Historias diarias',
+        desc: 'Cobertura completa todos los días del mes. Ideal para marcas con locales físicos que quieren mostrar el día a día, promociones del momento y generar urgencia en su comunidad.',
+        why: 'Las historias diarias mantienen a Donna presente en la mente de sus clientes cada mañana — no solo dos veces por semana.',
+        metrics: ['Vistas diarias', 'Respuestas e interacciones', 'Clics en enlace'],
+        priceKey: 'addon_historias_diarias'
+      },
+      {
+        id: 'addon_youtube',
+        name: 'Add-on: Gestión de YouTube',
+        desc: 'Los mismos videos del pack mensual se adaptan y suben a YouTube con título optimizado, descripción, tags y miniatura. Sin producción adicional.',
+        why: 'YouTube es el segundo buscador del mundo. Los videos de Donna pueden encontrarse cuando alguien busca "panadería venezolana en Buenos Aires".',
+        metrics: ['Vistas', 'Suscriptores', 'Posicionamiento en búsqueda'],
+        priceKey: 'addon_youtube'
+      }
+    ]
+  },
+  {
+    id: 'av',
+    icon: '🎬',
+    color: 'rgba(184,224,74,.12)',
+    title: 'Producción Audiovisual',
+    sub: 'Producción ejecutiva · Guion · Cámara · Edición profesional · Entrega lista para publicar',
+    services: [
+      {
+        id: 'av_reels',
+        name: 'Pack de Reels mensuales',
+        desc: 'El equipo de Contentive se encarga de todo el proceso: idea y guion, coordinación del rodaje, grabación en el local con equipo profesional, edición con corrección de color, musicalización, subtítulos y entrega lista para publicar. Cada reel tiene un objetivo comunicacional claro.',
+        why: 'El video es el formato con mayor alcance orgánico en Instagram y TikTok. Un reel bien producido puede multiplicar la visibilidad de Donna de forma exponencial.',
+        metrics: ['Reproducciones', 'Shares', 'Alcance orgánico', 'Nuevos seguidores'],
+        variants: [
+          { label: '1 reel/mes', key: 'av_camara_x1' },
+          { label: '4 reels/mes', key: 'av_camara_x4' },
+          { label: '8 reels/mes', key: 'av_camara_x8' },
+          { label: '12 reels/mes', key: 'av_camara_x12' },
+        ],
+        defaultVariant: 1
+      }
+    ]
+  },
+  {
+    id: 'meta',
+    icon: '📣',
+    color: 'rgba(96,165,250,.1)',
+    title: 'Meta Ads — Pauta en Instagram y Facebook',
+    sub: 'Gestión profesional de campañas pagas · Setup · Optimización · Escalado',
+    services: [
+      {
+        id: 'meta_setup',
+        name: 'Setup avanzado de campaña',
+        desc: 'Configuración completa del gestor de anuncios: estructura de campañas, segmentación de audiencias (intereses, lookalikes, retargeting), objetivos y píxel de Meta. Se hace una sola vez al inicio.',
+        why: 'Un setup mal hecho quema presupuesto desde el día 1. La estructura correcta desde el principio es la base de cualquier campaña rentable.',
+        metrics: ['Estructura de cuenta', 'Píxel configurado', 'Audiencias base'],
+        priceKey: 'meta_setup'
+      },
+      {
+        id: 'meta_gestion',
+        name: 'Gestión mensual de performance',
+        desc: 'Administración activa mes a mes: monitoreo de CPM, CPC, CTR, ROAS y costo por lead. Optimización de segmentaciones, ajuste de presupuesto y pruebas A/B. Incluye informe mensual de resultados.',
+        why: 'Una campaña sin gestión activa pierde eficiencia. Optimizamos semana a semana para que cada peso invertido en pauta rinda más.',
+        metrics: ['ROAS', 'Costo por lead', 'CTR', 'Alcance pagado', 'Informe mensual'],
+        priceKey: 'meta_gestion'
+      },
+      {
+        id: 'meta_auditoria',
+        name: 'Auditoría de cuenta publicitaria',
+        desc: 'Si ya tenés campañas corriendo, hacemos un diagnóstico completo: estructura, segmentaciones, creatividades, métricas históricas y eficiencia del presupuesto. Entregamos informe con hallazgos y recomendaciones.',
+        why: 'Ideal si nunca supiste por qué tus campañas anteriores no funcionaron — el informe te da claridad total.',
+        metrics: ['Diagnóstico completo', 'Informe de hallazgos', 'Plan de acción'],
+        priceKey: 'meta_auditoria'
+      }
+    ]
+  },
+  {
+    id: 'google',
+    icon: '🔍',
+    color: 'rgba(74,222,128,.08)',
+    title: 'Google Ads — Buscador y Maps',
+    sub: 'Campañas de búsqueda · Google Maps · Visibilidad local',
+    services: [
+      {
+        id: 'google_ads',
+        name: 'Gestión de campañas en Google',
+        desc: 'Campañas en el buscador para aparecer cuando alguien busca "panadería venezolana Buenos Aires" o términos relacionados. También optimización de perfil de Google My Business para destacar en Maps.',
+        why: 'Quien busca en Google ya tiene intención de compra. Aparecer en el momento justo es la forma más directa de llevar clientes nuevos al local.',
+        metrics: ['Clics en búsqueda', 'Impresiones', 'Vistas en Maps', 'Llamadas generadas'],
+        priceKey: null
+      }
+    ]
+  },
+  {
+    id: 'email',
+    icon: '📧',
+    color: 'rgba(245,166,35,.08)',
+    title: 'Email Marketing',
+    sub: 'Canal propio · Sin dependencia de algoritmos · Alta conversión',
+    services: [
+      {
+        id: 'email_setup_svc',
+        name: 'Setup de plataforma',
+        desc: 'Configuración completa de la plataforma de email elegida (Mailchimp, Brevo o similar): listas de contactos, formulario de suscripción en tu web/redes, configuración técnica y plantilla base con la identidad de Donna.',
+        why: 'El email tiene el mayor retorno sobre la inversión en marketing digital. Y a diferencia de las redes, nadie te puede "desactivar" tu lista.',
+        metrics: ['Tasa de apertura', 'Clics', 'Bajas', 'ROI por envío'],
+        priceKey: 'email_setup'
+      },
+      {
+        id: 'email_gestion_svc',
+        name: 'Gestión mensual de emails',
+        desc: 'Planificación, redacción, diseño y envío de los emails del mes. Incluye definición de temas, copywriting, diseño visual con identidad de Donna, programación del envío y monitoreo de métricas.',
+        why: 'Mantener contacto directo con tu comunidad por mail fideliza clientes y genera ventas recurrentes sin depender de Instagram.',
+        metrics: ['Tasa de apertura', 'CTR', 'Conversiones', 'Informe mensual'],
+        priceKey: 'email_gestion'
+      },
+      {
+        id: 'email_secuencia_svc',
+        name: 'Secuencia de bienvenida automatizada',
+        desc: 'Serie de emails automáticos que se envían cuando alguien se suscribe a tu lista. Presenta a Donna, cuenta la historia de la marca, comparte recetas o tips, y hace una oferta de bienvenida. Se configura una vez y trabaja sola.',
+        why: 'El momento en que alguien se suscribe es cuando más interés tiene. Una secuencia bien armada convierte suscriptores en clientes.',
+        metrics: ['Tasa de apertura', 'Conversión a primera compra'],
+        priceKey: 'email_secuencia'
+      }
+    ]
+  },
+  {
+    id: 'web',
+    icon: '🌐',
+    color: 'rgba(184,224,74,.06)',
+    title: 'Comunicaciones Web',
+    sub: 'Gestión del sitio · Actualización de contenido · Banners y comunicación digital',
+    services: [
+      {
+        id: 'web_gestion',
+        name: 'Gestión de contenido web',
+        desc: 'Actualización mensual del sitio web de Donna: cambio de banners, actualización de menú o carta, carga de novedades, optimización básica de SEO y coherencia visual con las redes sociales.',
+        why: 'Tu web es la carta de presentación más importante que tenés. Si está desactualizada o no refleja lo que ves en Instagram, perdés credibilidad.',
+        metrics: ['Sesiones web', 'Tiempo en página', 'Posicionamiento orgánico'],
+        priceKey: null
+      }
+    ]
+  },
+  {
+    id: 'diseno',
+    icon: '🎨',
+    color: 'rgba(245,166,35,.06)',
+    title: 'Diseño Gráfico — Piezas especiales',
+    sub: 'Campañas estacionales · Flyers · Banners · Piezas puntuales',
+    services: [
+      {
+        id: 'campana_estacional',
+        name: 'Campaña estacional',
+        desc: 'Concepto visual completo para una fecha especial: Navidad, Día de la Madre, San Valentín, temporada mundialista, etc. Incluye adaptaciones para redes, historias, cartelería y lo que necesite la campaña.',
+        why: 'Las fechas especiales son las mejores oportunidades de ventas para una panadería. Una campaña visual bien armada multiplica el impacto.',
+        metrics: ['Alcance de la campaña', 'Ventas del período'],
+        variants: [
+          { label: 'Pack Básico · 4 piezas adaptadas', key: 'campana_basico' },
+          { label: 'Pack Full · 8 piezas adaptadas', key: 'campana_full' }
+        ],
+        defaultVariant: 0
+      },
+      {
+        id: 'flyers',
+        name: 'Pack de flyers',
+        desc: 'Diseño de flyers digitales o para imprimir: promociones, menú del día, novedades, eventos. Listos en alta definición para cualquier uso.',
+        why: 'Un flyer bien diseñado comunica una promoción de forma inmediata — tanto en el local como en el WhatsApp o las redes.',
+        variants: [
+          { label: '1 flyer', key: 'flyer_1_1f' },
+          { label: 'Pack de 3 flyers', key: 'flyer_3_1f' },
+          { label: 'Pack de 5 flyers', key: 'flyer_5_1f' }
+        ],
+        defaultVariant: 1
+      }
+    ]
+  },
+  {
+    id: 'foto',
+    icon: '📸',
+    color: 'rgba(96,165,250,.08)',
+    title: 'Fotografía Profesional',
+    sub: 'Fotos de producto · Sesiones de marca · Eventos',
+    services: [
+      {
+        id: 'foto_producto',
+        name: 'Sesión de fotografía de producto',
+        desc: 'Fotografías profesionales de los productos de Donna: panes, tortas, medialunas, platos. Fondo blanco o con escenografía, estilo flat lay y lifestyle. Entrega en alta definición lista para publicar.',
+        why: 'Las fotos de producto de calidad generan más clics, más antojo y más ventas. Una imagen profesional comunica calidad antes de que el cliente pruebe el producto.',
+        metrics: ['Fotos entregadas en HD', 'Listas para redes y web'],
+        variants: [
+          { label: '10 fotos editadas', key: 'foto_producto_basico' },
+          { label: '20 fotos editadas', key: 'foto_producto_medio' },
+          { label: '30 fotos editadas', key: 'foto_producto_full' }
+        ],
+        defaultVariant: 0
+      },
+      {
+        id: 'foto_evento',
+        name: 'Cobertura fotográfica de evento',
+        desc: 'Cobertura profesional de eventos en el local: lanzamientos, catas, celebraciones, jornadas especiales. Entrega de todas las fotos editadas en alta definición.',
+        why: 'Un evento sin registro profesional desaparece. Las fotos de calidad alimentan semanas de contenido en redes y construyen la historia de Donna.',
+        variants: [
+          { label: 'Hasta 1 hora · 60 fotos', key: 'foto_evento_1h' },
+          { label: 'Hasta 2 horas · 120 fotos', key: 'foto_evento_2h' },
+          { label: 'Hasta 4 horas · 300 fotos', key: 'foto_evento_4h' }
+        ],
+        defaultVariant: 0
+      }
+    ]
+  },
+  {
+    id: 'acciones',
+    icon: '🎪',
+    color: 'rgba(245,166,35,.1)',
+    title: 'Acciones Especiales y Activaciones',
+    sub: 'Experiencias en el local · Eventos · Decoración · Dinámicas con la comunidad',
+    services: [
+      {
+        id: 'cata',
+        name: 'Organización de catas y degustaciones',
+        desc: 'Planificación y ejecución completa de una cata o evento de degustación en el local: concepto, invitaciones, dinámica, materiales y registro audiovisual del evento.',
+        why: 'Una cata bien organizada genera experiencia memorable, contenido para semanas y recomendaciones boca a boca que ningún anuncio puede comprar.',
+        metrics: ['Asistentes', 'Contenido generado', 'Alcance post-evento'],
+        priceKey: null
+      },
+      {
+        id: 'deco_tematica',
+        name: 'Decoración temática del local',
+        desc: 'Concepto y supervisión de decoración estacional o temática para el local: Navidad, Pascuas, Mundiales, temporadas. Coordinamos con proveedores para que el local sea parte de la campaña.',
+        why: 'El local físico de Donna es el mejor escenario de contenido. Una decoración bien pensada genera fotos, reels y experiencias que los clientes comparten solos.',
+        metrics: ['Fotos generadas', 'Contenido orgánico de clientes'],
+        priceKey: null
+      },
+      {
+        id: 'ruleta',
+        name: 'Dinámica de ruleta con premios',
+        desc: 'Organización de dinámicas interactivas en el local o en redes: ruletas de premios, sorteos, desafíos. Concepto, materiales, comunicación y ejecución completa.',
+        why: 'Las dinámicas con premios generan visitas al local, interacción en redes y crean expectativa para futuros eventos. La gente vuelve a donde se divierte.',
+        metrics: ['Participantes', 'Engagement en redes', 'Visitas al local'],
+        priceKey: null
+      },
+      {
+        id: 'activacion_calle',
+        name: 'Activación en la vía pública',
+        desc: 'Acciones de marketing de guerrilla o activaciones cerca del local: sampling, acciones sorpresa, intervenciones en el barrio que lleven tráfico a la panadería.',
+        why: 'El barrio es el mejor activo de Donna. Activarlo de forma creativa genera ruido, contenido viral y nuevos clientes que viven a metros del local.',
+        metrics: ['Alcance de la acción', 'Tráfico generado al local'],
+        priceKey: null
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════
+const STEPS = ['bienvenida','context','catalog','review','confirm','success'];
+const STEP_LABELS = ['Bienvenida','Tu situación','Elegí servicios','Tu propuesta','Confirmación','¡Listo!'];
+const STEP_PROGRESS = ['5%','20%','60%','80%','95%','100%'];
+
+function goTo(step) {
+  STEPS.forEach(s => {
+    const el = document.getElementById('sec-' + s);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById('sec-' + step);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  const idx = STEPS.indexOf(step);
+  document.getElementById('headerStep').textContent = STEP_LABELS[idx] || '';
+  document.getElementById('progressFill').style.width = STEP_PROGRESS[idx] || '5%';
+  saveState();
+}
+
+function goToReview() {
+  renderReview();
+  goTo('review');
+}
+
+// ══════════════════════════════════════════════
+// CARGAR PRECIOS DESDE SCRIPT INTERMEDIARIO
+// ══════════════════════════════════════════════
+async function loadPrecios() {
+  try {
+    const res = await fetch(SCRIPT_URL);
+    const data = await res.json();
+    if (data.ok && data.precios) {
+      precios = data.precios;
+    }
+  } catch(e) {
+    console.warn('No se pudieron cargar precios:', e);
+  }
+  document.getElementById('loadingOverlay').style.display = 'none';
+  renderCatalog();
+  restoreState();
+}
+
+// ══════════════════════════════════════════════
+// FORMATO DE PRECIO
+// ══════════════════════════════════════════════
+function fmt(n) {
+  if (!n) return null;
+  return '$ ' + Math.round(n).toLocaleString('es-AR');
+}
+
+function getPrecio(keys) {
+  if (!keys) return null;
+  const arr = Array.isArray(keys) ? keys : [keys];
+  for (const k of arr) {
+    if (precios[k] && precios[k] > 0) return precios[k];
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════════
+// RENDERIZAR CATÁLOGO
+// ══════════════════════════════════════════════
+function renderCatalog() {
+  const container = document.getElementById('catalogContainer');
+  container.innerHTML = '';
+
+  CATALOG.forEach((cat, ci) => {
+    const block = document.createElement('div');
+    block.className = 'cat-block' + (ci === 0 ? ' open' : '');
+    block.id = 'cat-' + cat.id;
+
+    const headerHtml = `
+      <div class="cat-header" onclick="toggleCat('${cat.id}')">
+        <div class="cat-header-left">
+          <div class="cat-icon" style="background:${cat.color}">${cat.icon}</div>
+          <div>
+            <div class="cat-title">${cat.title}</div>
+            <div class="cat-sub">${cat.sub}</div>
+          </div>
+        </div>
+        <div class="cat-toggle">▾</div>
+      </div>`;
+
+    let bodyHtml = '<div class="cat-body">';
+    cat.services.forEach(svc => {
+      bodyHtml += renderService(svc, cat);
+    });
+    bodyHtml += '</div>';
+
+    block.innerHTML = headerHtml + bodyHtml;
+    container.appendChild(block);
+  });
+}
+
+function renderService(svc, cat) {
+  const hasVariants = svc.variants && svc.variants.length > 0;
+  const defVar = svc.defaultVariant || 0;
+
+  // Calcular precio inicial
+  let initialPrice = null;
+  if (hasVariants) {
+    initialPrice = getPrecio(svc.variants[defVar].key);
+  } else {
+    initialPrice = getPrecio(svc.priceKey);
+  }
+
+  const priceDisplay = initialPrice
+    ? `<div class="price-label">por mes</div><div class="service-price" id="price-${svc.id}">${fmt(initialPrice)}</div>`
+    : svc.priceKey === null
+      ? `<div class="service-price pendiente" id="price-${svc.id}">A coordinar con Pedro</div>`
+      : `<div class="service-price loading" id="price-${svc.id}">Actualizando...</div>`;
+
+  const metricsHtml = svc.metrics
+    ? `<div class="service-metrics">${svc.metrics.map(m => `<span class="metric-chip">📊 ${m}</span>`).join('')}</div>`
+    : '';
+
+  const variantsHtml = hasVariants
+    ? `<div class="variant-selector" id="variants-${svc.id}">
+        ${svc.variants.map((v, i) => `
+          <button class="variant-btn ${i === defVar ? 'selected' : ''}"
+            onclick="selectVariant('${svc.id}','${v.key}','${v.label}',this)">
+            ${v.label}
+          </button>`).join('')}
+      </div>`
+    : '';
+
+  const inCart = !!cart[svc.id];
+  const inFuture = !!future[svc.id];
+
+  const addLabel = inCart ? '✓ En mi propuesta' : '+ Agregar';
+  const futureLabel = inFuture ? '✓ Para el futuro' : 'Para el futuro';
+
+  return `
+    <div class="service-item" id="svcitem-${svc.id}">
+      ${svc.recommended ? '<div style="font-size:11px;color:var(--orange);letter-spacing:.1em;margin-bottom:8px;font-weight:500;text-transform:uppercase;">★ Recomendado para Donna</div>' : ''}
+      <div class="service-item-top">
+        <div class="service-info">
+          <div class="service-name">${svc.name}</div>
+          <div class="service-desc">${svc.desc}</div>
+          <div class="service-why"><strong>¿Por qué lo recomendamos?</strong>${svc.why}</div>
+          ${metricsHtml}
+          ${variantsHtml}
+        </div>
+        <div class="service-action">
+          ${priceDisplay}
+          <button class="add-btn ${inCart ? 'added' : ''}" id="addbtn-${svc.id}"
+            onclick="toggleCart('${svc.id}','${cat.title}')">
+            ${addLabel}
+          </button>
+          ${svc.priceKey !== false ? `
+          <button class="future-btn ${inFuture ? 'marked' : ''}" id="futurebtn-${svc.id}"
+            onclick="toggleFuture('${svc.id}','${cat.title}')">
+            ${futureLabel}
+          </button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleCat(id) {
+  const block = document.getElementById('cat-' + id);
+  block.classList.toggle('open');
+}
+
+function selectVariant(svcId, priceKey, label, btn) {
+  // Actualizar botones
+  const container = document.getElementById('variants-' + svcId);
+  container.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // Actualizar precio mostrado
+  const precio = getPrecio(priceKey);
+  const priceEl = document.getElementById('price-' + svcId);
+  if (precio && priceEl) priceEl.textContent = fmt(precio);
+
+  // Si está en carrito, actualizar
+  if (cart[svcId]) {
+    cart[svcId].priceKey = priceKey;
+    cart[svcId].price = precio || 0;
+    cart[svcId].variant = label;
+    updateCartBar();
+    saveState();
+  }
+  // Si está en futuro, actualizar
+  if (future[svcId]) {
+    future[svcId].priceKey = priceKey;
+    future[svcId].price = precio || 0;
+    future[svcId].variant = label;
+    saveState();
+  }
+}
+
+// ══════════════════════════════════════════════
+// CARRITO
+// ══════════════════════════════════════════════
+function getSvcData(svcId, catTitle) {
+  for (const cat of CATALOG) {
+    for (const svc of cat.services) {
+      if (svc.id === svcId) {
+        const hasVariants = svc.variants && svc.variants.length;
+        let priceKey, variant, price;
+        if (hasVariants) {
+          const selected = document.querySelector(`#variants-${svcId} .variant-btn.selected`);
+          const defBtn = document.querySelector(`#variants-${svcId} .variant-btn`);
+          const activeBtn = selected || defBtn;
+          variant = activeBtn ? activeBtn.textContent.trim() : svc.variants[0].label;
+          priceKey = svc.variants.find(v => v.label === variant)?.key || svc.variants[0].key;
+        } else {
+          priceKey = svc.priceKey;
+          variant = null;
+        }
+        price = getPrecio(priceKey) || 0;
+        return { name: svc.name, price, priceKey, variant, catName: catTitle || cat.title };
+      }
+    }
+  }
+  return null;
+}
+
+function toggleCart(svcId, catTitle) {
+  if (cart[svcId]) {
+    delete cart[svcId];
+    const btn = document.getElementById('addbtn-' + svcId);
+    if (btn) { btn.textContent = '+ Agregar'; btn.classList.remove('added'); }
+  } else {
+    // Sacar de futuro si estaba
+    if (future[svcId]) {
+      delete future[svcId];
+      const fb = document.getElementById('futurebtn-' + svcId);
+      if (fb) { fb.textContent = 'Para el futuro'; fb.classList.remove('marked'); }
+    }
+    const data = getSvcData(svcId, catTitle);
+    if (data) cart[svcId] = data;
+    const btn = document.getElementById('addbtn-' + svcId);
+    if (btn) { btn.textContent = '✓ En mi propuesta'; btn.classList.add('added'); }
+  }
+  updateCartBar();
+  saveState();
+}
+
+function toggleFuture(svcId, catTitle) {
+  if (future[svcId]) {
+    delete future[svcId];
+    const btn = document.getElementById('futurebtn-' + svcId);
+    if (btn) { btn.textContent = 'Para el futuro'; btn.classList.remove('marked'); }
+  } else {
+    if (cart[svcId]) {
+      delete cart[svcId];
+      const ab = document.getElementById('addbtn-' + svcId);
+      if (ab) { ab.textContent = '+ Agregar'; ab.classList.remove('added'); }
+    }
+    const data = getSvcData(svcId, catTitle);
+    if (data) future[svcId] = data;
+    const btn = document.getElementById('futurebtn-' + svcId);
+    if (btn) { btn.textContent = '✓ Para el futuro'; btn.classList.add('marked'); }
+    updateCartBar();
+    saveState();
+  }
+}
+
+function updateCartBar() {
+  const items = Object.values(cart);
+  const count = items.length;
+  const total = items.reduce((s, i) => s + (i.price || 0), 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = total > 0 ? fmt(total) : '$ 0';
+  const bar = document.getElementById('cartBar');
+  bar.classList.toggle('visible', count > 0);
+}
+
+// ══════════════════════════════════════════════
+// REVISIÓN
+// ══════════════════════════════════════════════
+function renderReview() {
+  const container = document.getElementById('reviewContainer');
+  const cartItems = Object.entries(cart);
+  const futureItems = Object.entries(future);
+
+  if (cartItems.length === 0 && futureItems.length === 0) {
+    container.innerHTML = '<div class="empty-cart"><div class="icon">🛒</div><p>Todavía no elegiste ningún servicio.<br>Volvé al catálogo y armá tu propuesta.</p></div>';
+    return;
+  }
+
+  let html = '';
+
+  // Agrupar por categoría
+  const bycat = {};
+  cartItems.forEach(([id, item]) => {
+    if (!bycat[item.catName]) bycat[item.catName] = [];
+    bycat[item.catName].push({ id, ...item });
+  });
+
+  Object.entries(bycat).forEach(([cat, items]) => {
+    html += `<div class="review-group">
+      <div class="review-group-title">${cat}</div>`;
+    items.forEach(item => {
+      html += `<div class="review-item">
+        <div>
+          <div class="review-item-name">${item.name}</div>
+          ${item.variant ? `<div class="review-item-variant">${item.variant}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="review-item-price">${item.price > 0 ? fmt(item.price) + '/mes' : 'A coordinar'}</div>
+          <button class="remove-btn" onclick="removeFromCart('${item.id}')">✕</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  // Total
+  const total = cartItems.reduce((s, [, i]) => s + (i.price || 0), 0);
+  if (total > 0) {
+    html += `<div class="review-total-box">
+      <div>
+        <div class="label">Inversión mensual estimada</div>
+        <div class="period">Los servicios "a coordinar" se presupuestan por separado</div>
+      </div>
+      <div>
+        <div class="amount">${fmt(total)}</div>
+        <div style="font-size:11px;color:var(--muted);text-align:right">ARS / mes</div>
+      </div>
+    </div>`;
+  }
+
+  // Servicios para el futuro
+  if (futureItems.length > 0) {
+    html += `<div class="divider"></div>
+    <div class="review-group">
+      <div class="review-group-title" style="color:var(--blue)">Para el futuro</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Estos servicios los marcaste como interesantes pero no urgentes. Pedro los va a tener en cuenta para cuando sea el momento.</p>`;
+    futureItems.forEach(([id, item]) => {
+      html += `<div class="review-item future">
+        <div>
+          <div class="review-item-name">${item.name}</div>
+          ${item.variant ? `<div class="review-item-variant">${item.variant}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="review-item-price">Para más adelante</div>
+          <button class="remove-btn" onclick="removeFromFuture('${id}')">✕</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  container.innerHTML = html;
+  updateSummaryPreview();
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  const btn = document.getElementById('addbtn-' + id);
+  if (btn) { btn.textContent = '+ Agregar'; btn.classList.remove('added'); }
+  updateCartBar();
+  renderReview();
+  saveState();
+}
+
+function removeFromFuture(id) {
+  delete future[id];
+  const btn = document.getElementById('futurebtn-' + id);
+  if (btn) { btn.textContent = 'Para el futuro'; btn.classList.remove('marked'); }
+  renderReview();
+  saveState();
+}
+
+function updateSummaryPreview() {
+  const cartItems = Object.values(cart);
+  const futureItems = Object.values(future);
+  const total = cartItems.reduce((s, i) => s + (i.price || 0), 0);
+
+  let text = `<strong>Tu propuesta para Donna</strong><br><br>`;
+  text += `<strong>Servicios seleccionados (${cartItems.length}):</strong><br>`;
+  cartItems.forEach(i => {
+    text += `• ${i.name}${i.variant ? ' — ' + i.variant : ''}: ${i.price > 0 ? fmt(i.price) + '/mes' : 'A coordinar'}<br>`;
+  });
+  if (total > 0) text += `<br><strong>Total mensual estimado: ${fmt(total)} ARS</strong>`;
+  if (futureItems.length > 0) {
+    text += `<br><br><strong>Para el futuro (${futureItems.length}):</strong><br>`;
+    futureItems.forEach(i => { text += `• ${i.name}${i.variant ? ' — ' + i.variant : ''}<br>`; });
+  }
+  const el = document.getElementById('summaryPreview');
+  if (el) el.innerHTML = text;
+}
+
+// ══════════════════════════════════════════════
+// ENVÍO
+// ══════════════════════════════════════════════
+function enviarPropuesta() {
+  const nombre = document.getElementById('inputNombre').value.trim() || 'Lizabeth';
+  const mail = document.getElementById('inputMail').value.trim();
+  const mensaje = document.getElementById('inputMensaje').value.trim();
+
+  const cartItems = Object.values(cart);
+  const futureItems = Object.values(future);
+  const total = cartItems.reduce((s, i) => s + (i.price || 0), 0);
+
+  // Construir texto del mensaje
+  let waText = `🥐 *PROPUESTA DONNA — ${nombre}*\n`;
+  waText += `📅 ${new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' })}\n`;
+  if (mail) waText += `📧 ${mail}\n`;
+  waText += `\n*SERVICIOS SELECCIONADOS:*\n`;
+
+  // Agrupar por categoría
+  const bycat = {};
+  cartItems.forEach(item => {
+    if (!bycat[item.catName]) bycat[item.catName] = [];
+    bycat[item.catName].push(item);
+  });
+
+  Object.entries(bycat).forEach(([cat, items]) => {
+    waText += `\n📌 *${cat}*\n`;
+    items.forEach(i => {
+      waText += `  • ${i.name}${i.variant ? ' (' + i.variant + ')' : ''}: ${i.price > 0 ? fmt(i.price) + '/mes' : 'A coordinar'}\n`;
+    });
+  });
+
+  if (total > 0) waText += `\n💰 *TOTAL MENSUAL: ${fmt(total)} ARS*\n`;
+
+  if (futureItems.length > 0) {
+    waText += `\n🔮 *PARA EL FUTURO:*\n`;
+    futureItems.forEach(i => {
+      waText += `  • ${i.name}${i.variant ? ' (' + i.variant + ')' : ''}\n`;
+    });
+  }
+
+  if (mensaje) waText += `\n💬 *Mensaje:* ${mensaje}`;
+
+  // Enviar WhatsApp
+  const waURL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waText)}`;
+  window.open(waURL, '_blank');
+
+  // Limpiar estado y mostrar éxito
+  localStorage.removeItem(STORAGE_KEY);
+  goTo('success');
+}
+
+// ══════════════════════════════════════════════
+// PERSISTENCIA EN localStorage
+// ══════════════════════════════════════════════
+function saveState() {
+  try {
+    const activeSection = STEPS.find(s => {
+      const el = document.getElementById('sec-' + s);
+      return el && el.classList.contains('active');
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ cart, future, section: activeSection }));
+  } catch(e) {}
+}
+
+function restoreState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    if (state.cart) {
+      Object.entries(state.cart).forEach(([id, item]) => {
+        cart[id] = item;
+        const btn = document.getElementById('addbtn-' + id);
+        if (btn) { btn.textContent = '✓ En mi propuesta'; btn.classList.add('added'); }
+        // Restaurar variante seleccionada
+        if (item.variant) {
+          const varBtns = document.querySelectorAll(`#variants-${id} .variant-btn`);
+          varBtns.forEach(b => {
+            b.classList.remove('selected');
+            if (b.textContent.trim() === item.variant) b.classList.add('selected');
+          });
+        }
+      });
+    }
+    if (state.future) {
+      Object.entries(state.future).forEach(([id, item]) => {
+        future[id] = item;
+        const btn = document.getElementById('futurebtn-' + id);
+        if (btn) { btn.textContent = '✓ Para el futuro'; btn.classList.add('marked'); }
+      });
+    }
+    updateCartBar();
+    if (state.section && state.section !== 'bienvenida') goTo(state.section);
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+loadPrecios();
+</script>
+</body>
+</html>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contentive Studio — Calculadora de Presupuestos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+  :root{--bg:#0e0e0e;--surface:#161616;--surface2:#1e1e1e;--surface3:#242424;--border:#2a2a2a;--border2:#333;--orange:#F5A623;--lime:#B8E04A;--text:#f0ede8;--muted:#6b6b6b;--muted2:#3a3a3a;--red:#ff4444;--green:#4ade80;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+  #auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:28px;padding:40px 20px;}
+  .auth-dot-row{display:flex;gap:6px;margin-bottom:4px;}
+  .auth-dot{width:8px;height:8px;border-radius:50%;}
+  .auth-dot.orange{background:var(--orange);}
+  .auth-dot.lime{background:var(--lime);}
+  .auth-dot.muted{background:var(--muted2);}
+  .auth-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
+  .auth-sub{font-size:12px;color:var(--muted);letter-spacing:.04em;text-align:center;}
+  .pin-display{display:flex;gap:10px;margin-bottom:4px;}
+  .pin-dot{width:12px;height:12px;border-radius:50%;border:1px solid var(--border2);transition:background .15s,border-color .15s;}
+  .pin-dot.filled{background:var(--orange);border-color:var(--orange);}
+  .pin-dot.error{background:var(--red);border-color:var(--red);animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  .pin-grid{display:grid;grid-template-columns:repeat(3,56px);gap:8px;}
+  .pin-btn{width:56px;height:56px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:18px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s;}
+  .pin-btn:hover{background:var(--surface3);border-color:var(--border2);}
+  .pin-btn.del{font-size:14px;color:var(--muted);}
+  .pin-error{font-size:12px;color:var(--red);min-height:16px;text-align:center;}
+  #app{display:none;}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:15px 28px;position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .logo-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;flex-shrink:0;}
+  .header-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;}
+  .header-badge{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:10px;font-family:'Syne',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--orange);}
+  .fx-banner{background:var(--surface2);border-bottom:1px solid var(--border);padding:7px 28px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+  .fx-dot2{width:5px;height:5px;border-radius:50%;background:var(--muted2);flex-shrink:0;}
+  .fx-dot2.live{background:var(--green);}
+  .steps-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0;overflow-x:auto;}
+  .step-tab{display:flex;align-items:center;gap:8px;padding:14px 18px;font-size:11px;font-family:'Syne',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;}
+  .step-tab:hover{color:var(--text);}
+  .step-tab.active{color:var(--text);border-bottom-color:var(--orange);}
+  .step-num{width:19px;height:19px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+  .step-tab.active .step-num{background:var(--orange);color:#000;border-color:var(--orange);}
+  .main{max-width:1100px;margin:0 auto;padding:28px 28px 90px;}
+  .section-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .step-panel{display:none;}
+  .step-panel.active{display:block;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-group{display:flex;flex-direction:column;gap:5px;}
+  .form-group.full{grid-column:1/-1;}
+  label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;padding:9px 13px;transition:border-color .15s;outline:none;}
+  input:focus,select:focus,textarea:focus{border-color:var(--orange);}
+  textarea{resize:vertical;min-height:80px;}
+  select option{background:var(--surface2);}
+  .radio-group{display:flex;gap:8px;flex-wrap:wrap;}
+  .radio-btn{padding:7px 15px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:13px;cursor:pointer;transition:all .15s;}
+  .radio-btn.selected{border-color:var(--orange);color:var(--orange);background:#f5a62315;}
+  /* STEP 2 */
+  .step2-layout{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start;}
+  .ai-search-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:18px;}
+  .ai-search-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+  .ai-search-label::before{content:'✦';font-size:9px;}
+  .ai-input-row{display:flex;gap:8px;}
+  .ai-input-row input{flex:1;}
+  .btn-ai{background:var(--lime);color:#000;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;padding:9px 14px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
+  .btn-ai:hover{opacity:.85;}
+  .btn-ai:disabled{opacity:.4;cursor:not-allowed;}
+  .ai-suggestions{margin-top:10px;display:flex;flex-wrap:wrap;gap:7px;}
+  .ai-chip{background:var(--surface3);border:1px solid var(--lime);border-radius:20px;padding:4px 11px;font-size:11px;color:var(--lime);cursor:pointer;transition:background .15s;}
+  .ai-chip:hover{background:#b8e04a20;}
+  .ai-chip.added{opacity:.4;pointer-events:none;}
+  .ai-thinking{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .ai-thinking::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--lime);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.2;}}
+  .cat-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .cat-btn{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);font-size:11px;cursor:pointer;transition:all .15s;}
+  .cat-btn.active{border-color:var(--orange);color:var(--orange);background:#f5a62315;}
+  .services-list{display:flex;flex-direction:column;gap:5px;max-height:540px;overflow-y:auto;padding-right:3px;}
+  .services-list::-webkit-scrollbar{width:3px;}
+  .services-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .service-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .service-item:hover{border-color:var(--border2);background:var(--surface3);}
+  .service-item.in-cart{border-color:var(--orange);background:#f5a62308;}
+  .service-info{flex:1;min-width:0;}
+  .service-name{font-size:12px;font-weight:400;color:var(--text);line-height:1.3;}
+  .service-desc{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .service-badges{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap;}
+  .badge{padding:2px 7px;border-radius:20px;font-size:9px;letter-spacing:.03em;}
+  .badge-cat{background:var(--surface3);border:1px solid var(--border);color:var(--muted);}
+  .badge-who{background:#f5a62318;border:1px solid #f5a62340;color:var(--orange);}
+  .service-add{flex-shrink:0;width:26px;height:26px;border-radius:6px;background:var(--surface3);border:1px solid var(--border);color:var(--muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .service-add:hover{border-color:var(--orange);color:var(--orange);}
+  .service-item.in-cart .service-add{background:var(--orange);color:#000;border-color:var(--orange);}
+  /* CART */
+  .cart-panel{background:var(--surface);border:1px solid var(--border);border-radius:13px;position:sticky;top:100px;}
+  .cart-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .cart-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+  .cart-count{background:var(--orange);color:#000;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+  .cart-items{padding:10px;display:flex;flex-direction:column;gap:5px;max-height:340px;overflow-y:auto;}
+  .cart-item{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 10px;display:flex;align-items:flex-start;gap:7px;}
+  .cart-item-info{flex:1;min-width:0;}
+  .cart-item-name{font-size:11px;color:var(--text);line-height:1.3;}
+  .cart-item-cat{font-size:10px;color:var(--muted);margin-top:1px;}
+  .cart-pack-sel{margin-top:5px;}
+  .cart-pack-sel select{font-size:10px;padding:3px 7px;width:100%;}
+  .cart-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;line-height:1;flex-shrink:0;transition:color .15s;}
+  .cart-remove:hover{color:var(--red);}
+  .cart-footer{padding:12px 16px;border-top:1px solid var(--border);}
+  .cart-subtotal-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .cart-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:500;color:var(--text);margin-top:7px;}
+  .cart-empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:12px;}
+  /* STEP 3 */
+  .overhead-config{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .overhead-field{display:flex;align-items:center;gap:9px;}
+  .overhead-field label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+  .overhead-field input{width:75px;}
+  .pricing-table{width:100%;border-collapse:collapse;}
+  .pricing-table th{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 11px;text-align:right;border-bottom:1px solid var(--border);}
+  .pricing-table th:first-child{text-align:left;}
+  .pricing-table td{padding:10px 11px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle;}
+  .pricing-table td:not(:first-child){text-align:right;}
+  .pricing-table tr:hover td{background:var(--surface2);}
+  .price-input{background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--orange);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 8px;text-align:right;width:130px;outline:none;transition:border-color .15s;}
+  .price-input:focus{border-color:var(--orange);}
+  .muted-val{color:var(--muted);font-size:11px;}
+  .margin-badge{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--surface3);border:1px solid var(--border);color:var(--muted);}
+  .pricing-summary{margin-top:22px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:18px 22px;}
+  .summary-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border);}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row.total{color:var(--text);font-size:15px;font-weight:500;padding-top:11px;}
+  .summary-row.total .val{color:var(--orange);font-family:'Syne',sans-serif;font-weight:700;}
+  /* STEP 4 */
+  .preview-actions{display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;}
+  .btn{padding:9px 18px;border-radius:8px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none;}
+  .btn-primary{background:var(--orange);color:#000;}
+  .btn-primary:hover{opacity:.85;}
+  .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+  .btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
+  .btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);}
+  .btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+  .pdf-preview{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+  .pdf-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:26px 34px;display:flex;align-items:flex-start;justify-content:space-between;}
+  .pdf-logo-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+  .pdf-logo-sub{font-size:10px;color:var(--muted);letter-spacing:.03em;margin-top:2px;}
+  .pdf-num{font-family:'Syne',sans-serif;font-size:10px;color:var(--orange);letter-spacing:.08em;}
+  .pdf-date{font-size:11px;color:var(--muted);margin-top:2px;}
+  .pdf-body{padding:26px 34px;}
+  .pdf-section{margin-bottom:26px;}
+  .pdf-section-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .pdf-client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+  .pdf-client-label{font-size:9px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;}
+  .pdf-client-val{font-size:12px;color:var(--text);margin-top:2px;}
+  .pdf-table{width:100%;border-collapse:collapse;}
+  .pdf-table th{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:7px 9px;text-align:right;border-bottom:1px solid var(--border);}
+  .pdf-table th:first-child{text-align:left;}
+  .pdf-table td{padding:9px 9px;border-bottom:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .pdf-table td:not(:first-child){text-align:right;white-space:nowrap;}
+  .pdf-table-name{font-weight:400;color:var(--text);}
+  .pdf-table-desc{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4;}
+  .pdf-total-row{display:flex;justify-content:flex-end;gap:44px;padding:4px 9px;font-size:11px;color:var(--muted);}
+  .pdf-total-row.final{font-size:14px;color:var(--text);font-weight:500;border-top:1px solid var(--border);padding-top:11px;margin-top:5px;}
+  .pdf-total-val{min-width:130px;text-align:right;}
+  .pdf-total-row.final .pdf-total-val{color:var(--orange);font-family:'Syne',sans-serif;font-weight:700;font-size:16px;}
+  .pdf-tc-block{margin-bottom:16px;}
+  .pdf-tc-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text);margin-bottom:5px;}
+  .pdf-tc-text{font-size:11px;color:var(--muted);line-height:1.7;}
+  .pdf-footer{border-top:1px solid var(--border);padding:14px 34px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted);}
+  /* STEP 5 */
+  .historial-filters{display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;}
+  .historial-filters input{flex:1;min-width:200px;}
+  .historial-filters select{width:140px;}
+  .historial-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:13px;}
+  .hist-card{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:14px 16px;cursor:pointer;transition:border-color .15s;}
+  .hist-card:hover{border-color:var(--border2);}
+  .hist-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+  .hist-client{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text);}
+  .hist-date{font-size:10px;color:var(--muted);}
+  .hist-services{font-size:11px;color:var(--muted);margin-bottom:9px;line-height:1.5;}
+  .hist-footer{display:flex;justify-content:space-between;align-items:center;}
+  .hist-total{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--orange);}
+  .hist-currency{font-size:9px;background:var(--surface3);border:1px solid var(--border);border-radius:20px;padding:2px 7px;color:var(--muted);}
+  .hist-empty{text-align:center;color:var(--muted);padding:48px;font-size:13px;grid-column:1/-1;}
+  /* NAV FOOTER */
+  .step-footer{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 28px;display:flex;justify-content:space-between;align-items:center;z-index:100;}
+  .step-footer-info{font-size:11px;color:var(--muted);}
+  /* TOAST */
+  .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 18px;font-size:12px;color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s;z-index:999;white-space:nowrap;}
+  .toast.show{opacity:1;}
+  .toast.ok{border-color:var(--green);color:var(--green);}
+  .toast.error{border-color:var(--red);color:var(--red);}
+  .loader{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+    <div class="auth-dot-row"><div class="auth-dot orange"></div><div class="auth-dot lime"></div><div class="auth-dot muted"></div></div>
+    <div class="auth-title">Calculadora<br>de Presupuestos</div>
+    <div class="auth-sub">Contentive Studio · Acceso Director</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+    <div class="pin-display" id="pin-display">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-btn" onclick="pinPress('1')">1</button><button class="pin-btn" onclick="pinPress('2')">2</button><button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button><button class="pin-btn" onclick="pinPress('5')">5</button><button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button><button class="pin-btn" onclick="pinPress('8')">8</button><button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn del" onclick="pinClear()">✕</button><button class="pin-btn" onclick="pinPress('0')">0</button><button class="pin-btn del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-dot"></div>
+      <div class="header-title">Calculadora de Presupuestos</div>
+      <div class="header-badge">Director</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="data-status" style="font-size:11px;color:var(--muted);">Iniciando…</span>
+      <button class="btn btn-ghost" onclick="logout()" style="font-size:10px;padding:5px 11px;">Salir</button>
+    </div>
+  </div>
+
+  <div class="fx-banner">
+    <div class="fx-dot2" id="fx-dot"></div>
+    <span>USD Oficial · <strong id="fx-val" style="color:var(--text);">—</strong></span>
+    <span id="fx-time" style="margin-left:4px;"></span>
+  </div>
+
+  <div class="steps-nav">
+    <button class="step-tab active" id="tab-1" onclick="goStep(1)"><span class="step-num">1</span>Cliente</button>
+    <button class="step-tab" id="tab-2" onclick="goStep(2)"><span class="step-num">2</span>Servicios</button>
+    <button class="step-tab" id="tab-3" onclick="goStep(3)"><span class="step-num">3</span>Pricing</button>
+    <button class="step-tab" id="tab-4" onclick="goStep(4)"><span class="step-num">4</span>Preview</button>
+    <button class="step-tab" id="tab-5" onclick="goStep(5)"><span class="step-num">5</span>Historial</button>
+  </div>
+
+  <div class="main">
+
+    <!-- STEP 1 -->
+    <div class="step-panel active" id="step-1">
+      <div class="section-title" style="margin-bottom:18px;">Datos del cliente y contexto del presupuesto</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Empresa / Cliente *</label><input type="text" id="cli-nombre" placeholder="ej. Panadería Venezolana Donna"></div>
+        <div class="form-group"><label>Contacto</label><input type="text" id="cli-contacto" placeholder="Nombre de la persona"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="cli-email" placeholder="mail@empresa.com"></div>
+        <div class="form-group"><label>Teléfono</label><input type="text" id="cli-tel" placeholder="+54 9 11 …"></div>
+      </div>
+      <div style="margin-top:22px;">
+        <div class="section-title">Tipo de cliente</div>
+        <div class="radio-group" id="tipo-cliente">
+          <div class="radio-btn selected" data-val="pyme" onclick="selectRadio('tipo-cliente',this)">Pyme</div>
+          <div class="radio-btn" data-val="empresa" onclick="selectRadio('tipo-cliente',this)">Empresa</div>
+          <div class="radio-btn" data-val="internacional" onclick="selectRadio('tipo-cliente',this)">Internacional</div>
+        </div>
+      </div>
+      <div style="margin-top:22px;">
+        <div class="section-title">Moneda de presentación</div>
+        <div class="radio-group" id="moneda">
+          <div class="radio-btn selected" data-val="ARS" onclick="selectRadio('moneda',this)">ARS $</div>
+          <div class="radio-btn" data-val="USD" onclick="selectRadio('moneda',this)">USD u$s</div>
+          <div class="radio-btn" data-val="USD20" onclick="selectRadio('moneda',this)">USD +20% (ccl)</div>
+        </div>
+      </div>
+      <div style="margin-top:22px;">
+        <div class="section-title">Notas internas</div>
+        <textarea id="cli-notas" placeholder="Contexto del proyecto, aclaraciones internas… No aparece en el PDF."></textarea>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel" id="step-2">
+      <div class="step2-layout">
+        <div>
+          <div class="ai-search-box">
+            <div class="ai-search-label">Buscador IA — describí la necesidad del cliente</div>
+            <div class="ai-input-row">
+              <input type="text" id="ai-query" placeholder="ej. gestión de redes con diseño y reels para gastronomía" onkeydown="if(event.key==='Enter')aiSearch()">
+              <button class="btn-ai" id="ai-btn" onclick="aiSearch()">Buscar</button>
+            </div>
+            <div id="ai-suggestions" class="ai-suggestions"></div>
+          </div>
+          <div class="cat-filter">
+            <button class="cat-btn active" data-cat="all" onclick="filterCat(this)">Todos</button>
+            <button class="cat-btn" data-cat="branding" onclick="filterCat(this)">Branding</button>
+            <button class="cat-btn" data-cat="disenio" onclick="filterCat(this)">Diseño</button>
+            <button class="cat-btn" data-cat="estrategia" onclick="filterCat(this)">Estrategia</button>
+            <button class="cat-btn" data-cat="audiovisual" onclick="filterCat(this)">Audiovisual</button>
+            <button class="cat-btn" data-cat="community" onclick="filterCat(this)">Community</button>
+            <button class="cat-btn" data-cat="ads" onclick="filterCat(this)">Meta Ads</button>
+            <button class="cat-btn" data-cat="email" onclick="filterCat(this)">Email Mkt</button>
+          </div>
+          <div class="services-list" id="services-list"><div style="text-align:center;color:var(--muted);padding:28px;font-size:12px;"><div class="loader" style="margin:0 auto 10px;"></div>Cargando catálogo…</div></div>
+        </div>
+        <div class="cart-panel">
+          <div class="cart-header"><span class="cart-title">Carrito</span><span class="cart-count" id="cart-count">0</span></div>
+          <div id="cart-items" class="cart-items"><div class="cart-empty">Agregá servicios</div></div>
+          <div class="cart-footer">
+            <div class="cart-subtotal-row"><span>Costo producción (ARS)</span><span id="cart-costo">—</span></div>
+            <div class="cart-subtotal-row"><span>Overhead (20%)</span><span id="cart-overhead">—</span></div>
+            <div class="cart-total-row"><span>Base total</span><span id="cart-base">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel" id="step-3">
+      <div class="overhead-config">
+        <div class="overhead-field"><label>Overhead %</label><input type="number" id="overhead-pct" value="20" min="0" max="100" oninput="buildPricingTable()"></div>
+        <div class="overhead-field"><label>Moneda</label><span id="moneda-label" style="font-size:13px;color:var(--text);">ARS</span></div>
+        <div style="margin-left:auto;font-size:10px;color:var(--muted);">Margen por categoría aplicado automáticamente</div>
+      </div>
+      <table class="pricing-table">
+        <thead><tr>
+          <th style="text-align:left;">Servicio</th>
+          <th>Costo prod.</th>
+          <th>+ Overhead</th>
+          <th>Margen</th>
+          <th>Sugerido</th>
+          <th>Precio final</th>
+        </tr></thead>
+        <tbody id="pricing-tbody"></tbody>
+      </table>
+      <div class="pricing-summary" id="pricing-summary"></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-panel" id="step-4">
+      <div class="preview-actions">
+        <button class="btn btn-primary" onclick="downloadPDF()">↓ Descargar PDF</button>
+        <button class="btn btn-secondary" onclick="saveToHistory()">Guardar en historial</button>
+        <button class="btn btn-ghost" onclick="goStep(3)">← Editar precios</button>
+      </div>
+      <div class="pdf-preview" id="pdf-preview"></div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step-panel" id="step-5">
+      <div class="historial-filters">
+        <input type="text" id="hist-search" placeholder="Buscar por cliente o servicio…" oninput="renderHistorial()">
+        <select id="hist-moneda" onchange="renderHistorial()"><option value="">Todas las monedas</option><option value="ARS">ARS</option><option value="USD">USD</option><option value="USD20">USD +20%</option></select>
+        <select id="hist-tipo" onchange="renderHistorial()"><option value="">Todos los tipos</option><option value="pyme">Pyme</option><option value="empresa">Empresa</option><option value="internacional">Internacional</option></select>
+        <button class="btn btn-ghost" style="font-size:10px;" onclick="if(confirm('¿Borrar todo el historial?')){clearHistory();}">Limpiar</button>
+      </div>
+      <div class="historial-grid" id="historial-grid"></div>
+    </div>
+
+  </div>
+
+  <div class="step-footer">
+    <div class="step-footer-info" id="footer-info">Paso 1 de 5</div>
+    <div style="display:flex;gap:9px;">
+      <button class="btn btn-ghost" id="btn-prev" onclick="stepPrev()" style="font-size:10px;opacity:.4;" disabled>← Anterior</button>
+      <button class="btn btn-primary" id="btn-next" onclick="stepNext()" style="font-size:10px;">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const PEDRO_PIN       = '2510';
+const DANIELA_SCRIPT  = 'https://script.google.com/macros/s/AKfycbx-TOKFLVMurs2Pan5TKQlfzx33ZTueJ4TGellVHhMsJDMcfKc3SaKIdq6JhsRcP1RB/exec';
+const DANIELA_PIN     = '2608';
+const VICTORIA_SCRIPT = 'https://script.google.com/macros/s/AKfycbzfzz1iqtVLo0q5a-kT7twZW62SF2g-DjrVqc47rIYF7Hfb7FwnXOyu4QC_vNsFTzFM/exec';
+const VICTORIA_PIN    = '1101';
+const ORIANNA_SCRIPT  = 'https://script.google.com/macros/s/AKfycbx9rjJdophviygL_fhG6Rns3Uez7HsnmBleSyanNhpHNyAmOJSuy7vDoXBmxrlDm6i2/exec';
+const ORIANNA_PIN     = '0102';
+const PAULA_SCRIPT    = 'https://script.google.com/macros/s/AKfycbyb5ZE9wlK4CqM4nLWLwSKYp-RWVqqAy7y1mODWw-JYb5RPoOG8pov9LZjh-o9SfS0j/exec';
+const PAULA_PIN       = '0711';
+const PEDRO_SCRIPT    = 'https://script.google.com/macros/s/AKfycbxXrP_rQtJo-8nE8r5JMlrSlVH7WBw9NOYAhh4--PhjatbArJMiMDCeHXX8gGFGpaADYw/exec';
+
+const MARGENES = {branding:.40,disenio:.38,estrategia:.42,audiovisual:.30,community:.38,ads:.35,email:.38,educacion:.55};
+
+// ── CATÁLOGOS ───────────────────────────────────────────────
+const DANIELA_SECTIONS=[
+  {id:'branding',name:'Branding e Identidad Visual',cat:'branding',services:[
+    {id:'id_simple',name:'Identidad Corporativa Simple',desc:'Logotipo, paleta, tipografía y manual básico. 3 propuestas. AI, PSD, PNG, SVG y PDF vectorial.'},
+    {id:'id_prof',name:'Identidad Corporativa Profesional',desc:'Sistema visual completo: logotipo con variantes, paleta HEX/CMYK/RGB/Pantone, sistema tipográfico y manual profesional.'},
+    {id:'branding_book',name:'Branding Book Completo',desc:'Identidad visual completa + universo de marca + plantillas RRSS + papelería + comunicación verbal (con Victoria).'},
+    {id:'kit_identidad_digital',name:'Kit de Identidad Digital',desc:'8 plantillas feed + 16 plantillas historias + 6 portadas destacadas. Editable en Canva, AI o PSD.'},
+    {id:'papeleria',name:'Papelería Corporativa',desc:'Tarjeta personal, membrete A4, sobre, carpeta, plantilla Word/Google Docs y firma de mail HTML.'},
+    {id:'merch',name:'Merchandising Corporativo',desc:'Archivos técnicos para proveedor + mockup 3D para aprobación.'},
+  ]},
+  {id:'packs',name:'Diseño Gráfico y Multimedia',cat:'disenio',services:[
+    {id:'pack_basico',name:'Pack Básico — x4 piezas feed',desc:'4 piezas estáticas + 16 días historias interdiarias + portadas (máx. 6).'},
+    {id:'pack_medio',name:'Pack Medio — x8 piezas feed',desc:'8 piezas estáticas + 16 días historias interdiarias + portadas (máx. 6).'},
+    {id:'pack_full',name:'Pack Full — x12 piezas feed',desc:'12 piezas (incluye carruseles) + 16 días historias interdiarias + portadas (máx. 8).'},
+    {id:'pack_ultimate',name:'Pack Ultimate — x16 piezas feed',desc:'16 piezas (carruseles hasta 6 slides) + 31 días historias diarias + portadas (máx. 10).'},
+    {id:'pack_ultra',name:'Pack Ultra — x20 piezas feed',desc:'20 piezas (carruseles incluidos) + 31 días historias diarias + portadas (máx. 12).'},
+    {id:'pack_ultimate_historias_addon',name:'Add-on: Adaptación a Historias Diarias',desc:'15 días adicionales de historias para packs Básico, Medio o Full.'},
+    {id:'historias_basico',name:'Add-on: Pack Historias Básico (x8 días)',desc:'8 días de historias standalone.'},
+    {id:'historias_medio',name:'Add-on: Pack Historias Medio (x12 días)',desc:'12 días de historias standalone.'},
+    {id:'historias_full',name:'Add-on: Pack Historias Full (x16 días)',desc:'16 días de historias standalone.'},
+    {id:'historias_ultimate',name:'Add-on: Pack Historias Ultimate (x31 días)',desc:'31 días de historias diarias standalone.'},
+    {id:'camp_basico',name:'Campaña Estacional — Pack Básico',desc:'1 concepto visual + 4 piezas adaptadas.'},
+    {id:'camp_full',name:'Campaña Estacional — Pack Full',desc:'1 concepto visual + 8 piezas adaptadas.'},
+    {id:'packaging',name:'Diseño de Packaging / Etiquetas',desc:'1 línea de producto + 2 adaptaciones + mockup 3D.'},
+    {id:'landing',name:'Diseño de Landing Page / One Page',desc:'Diseño UI completo (wireframe + layout). Sin programación.'},
+    {id:'editorial',name:'Diseño Editorial (catálogo, eBook, menú)',desc:'4 a 12 páginas con identidad visual aplicada.'},
+    {id:'pres_est_basico',name:'Presentaciones Estáticas — Básico (5-10)',desc:'PDF de 5 a 10 diapositivas.'},
+    {id:'pres_est_medio',name:'Presentaciones Estáticas — Medio (10-20)',desc:'PDF de 10 a 20 diapositivas.'},
+    {id:'pres_est_full',name:'Presentaciones Estáticas — Full (30)',desc:'PDF de hasta 30 diapositivas.'},
+    {id:'pres_ed_basico',name:'Presentaciones Editables — Básico (5-10)',desc:'5 a 10 slides editables en PPT, Canva o PDF.'},
+    {id:'pres_ed_medio',name:'Presentaciones Editables — Medio (10-20)',desc:'10 a 20 slides editables.'},
+    {id:'pres_ed_full',name:'Presentaciones Editables — Full (30)',desc:'Hasta 30 slides editables.'},
+    {id:'flyer_1_1f',name:'Flyer — 1 unidad (1 faz)',desc:'1 flyer digital o imprimible de una cara.'},
+    {id:'flyer_3_1f',name:'Flyer — Pack de 3 (1 faz)',desc:'3 flyers digitales o imprimibles.'},
+    {id:'flyer_5_1f',name:'Flyer — Pack de 5 (1 faz)',desc:'5 flyers digitales o imprimibles.'},
+    {id:'brochure',name:'Brochure / Tríptico',desc:'Diseño de brochure o tríptico plegable.'},
+    {id:'banner_1',name:'Banner Web — 1 unidad',desc:'1 banner digital.'},
+    {id:'banner_3',name:'Banner Web — Pack de 3',desc:'3 banners digitales.'},
+    {id:'banner_5',name:'Banner Web — Pack de 5',desc:'5 banners digitales.'},
+    {id:'news_1',name:'Newsletter — 1 plantilla',desc:'Plantilla de email marketing responsive.'},
+    {id:'news_2',name:'Newsletter — Pack 2 plantillas',desc:'2 plantillas de email marketing.'},
+    {id:'news_4',name:'Newsletter — Pack 4 plantillas',desc:'4 plantillas de email marketing.'},
+  ]},
+];
+const VICTORIA_SECTIONS=[
+  {id:'estrategia',name:'Gestión y Estrategia de Redes',cat:'estrategia',services:[
+    {id:'plan_contenidos',name:'Plan de Contenidos Estratégico',desc:'Diagnóstico, definición estratégica y planificación del primer mes.'},
+    {id:'community_pack',name:'Community Pack (diseño + redacción)',desc:'Planificación mensual, conceptos narrativos y copys de las 12 publicaciones.'},
+    {id:'consultoria',name:'Consultoría de Estrategia Digital (1 sesión)',desc:'Soporte estratégico antes y después de la sesión.'},
+    {id:'auditoria',name:'Auditoría de Marca Digital',desc:'Informe y tabla de prioridades.'},
+    {id:'calendario_campanas',name:'Calendario de Campañas Promocionales',desc:'Calendario anual e ideas de contenido por fecha.'},
+    {id:'gestion_integral_x4',name:'Gestión Integral de Redes — Pack Inicial (x4)',desc:'4 publicaciones/mes. Onboarding estratégico, briefs y copys.'},
+    {id:'gestion_integral_x8',name:'Gestión Integral de Redes — Pack Básico (x8)',desc:'8 publicaciones/mes — 4 Instagram + 4 TikTok.'},
+    {id:'gestion_integral_x12',name:'Gestión Integral de Redes — Pack Avanzado (x12)',desc:'12 publicaciones/mes — 8 Instagram + 4 TikTok.'},
+    {id:'gestion_integral_x16',name:'Gestión Integral de Redes — Pack Premium (x16)',desc:'16 publicaciones/mes — 12 Instagram + 4 TikTok.'},
+    {id:'gestion_integral_x20',name:'Gestión Integral de Redes — Pack Ultra (x20)',desc:'20 publicaciones/mes — 16 Instagram + 4 TikTok.'},
+  ]},
+  {id:'audiovisual',name:'Audiovisual — Estrategia y Guiones',cat:'audiovisual',services:[
+    {id:'reels_ideas_x1',name:'Reels con ideas — Pack Inicial (x1)',desc:'Investigación, concepto y guion de 1 video.'},
+    {id:'reels_ideas_x4',name:'Reels con ideas — Pack Básico (x4)',desc:'4 conceptos y 4 guiones.'},
+    {id:'reels_ideas_x8',name:'Reels con ideas — Pack Avanzado (x8)',desc:'8 conceptos y 8 guiones.'},
+    {id:'reels_ideas_x10',name:'Reels con ideas — Pack Premium (x10)',desc:'10 conceptos y 10 guiones.'},
+    {id:'reels_ideas_x12',name:'Reels con ideas — Pack Ultra (x12)',desc:'12 conceptos y 12 guiones.'},
+  ]},
+  {id:'pauta',name:'Pauta y Email — Respaldo Estratégico',cat:'estrategia',services:[
+    {id:'meta_ads_respaldo',name:'Meta Ads — Respaldo estratégico',desc:'Respaldo estratégico de contenido. Ejecución técnica de Paula.'},
+    {id:'email_mkt_respaldo',name:'Email Marketing — Respaldo estratégico',desc:'Respaldo estratégico de contenido. Ejecución técnica de Paula.'},
+  ]},
+];
+const ORIANNA_SECTIONS=[
+  {id:'donna_camara',name:'Donna — Cámara + Edición',cat:'audiovisual',services:[
+    {id:'donna_camara_edicion',name:'Producción + Edición de Reels — Donna',desc:'Grabación y edición completa de reels de Donna.',packs:['x1','x4','x8','x10','x12']},
+  ]},
+  {id:'seklou',name:'Seklou — Solo Edición',cat:'audiovisual',services:[
+    {id:'seklou_edicion',name:'Edición de Reels — Seklou',desc:'Edición completa del material grabado. Sin rodaje.',packs:['x1','x4','x8','x10','x12']},
+  ]},
+  {id:'tecnotips',name:'TecnoTips — Solo Edición',cat:'audiovisual',services:[
+    {id:'tecnotips_edicion',name:'Edición de Reels — TecnoTips',desc:'Edición completa del material grabado. Sin rodaje.',packs:['x1','x4','x8','x10','x12']},
+  ]},
+  {id:'nuevos',name:'Cuentas Nuevas — Audiovisual',cat:'audiovisual',services:[
+    {id:'nuevo_camara_edicion',name:'Producción + Edición de Reels',desc:'Grabación y edición completa.',packs:['x1','x4','x8','x10','x12']},
+    {id:'nuevo_solo_edicion',name:'Solo Edición de Reels',desc:'Edición de material externo.',packs:['x1','x4','x8','x10','x12']},
+  ]},
+];
+const PAULA_SECTIONS=[
+  {id:'community',name:'Community Management',cat:'community',services:[
+    {id:'cm_donna',name:'CM — Panadería Venezolana Donna',desc:'5 reels/TikToks · 16 bloques historias interdiarias · Instagram + TikTok.'},
+    {id:'cm_seklou',name:'CM — Seklou',desc:'8 reels/TikToks · 16 bloques historias · Instagram + TikTok + YouTube.'},
+    {id:'cm_tecnotips',name:'CM — TecnoTips',desc:'8 reels/TikToks · 16 bloques historias · Instagram + TikTok + YouTube.'},
+    {id:'cm_nuevo',name:'CM — Cuenta Nueva',desc:'Precio según pack. Completar manualmente.'},
+    {id:'adicional_historias_diarias',name:'Adicional — Historias Diarias',desc:'Historias todos los días del mes. Adicional sobre cualquier pack.'},
+    {id:'adicional_youtube',name:'Adicional — Gestión YouTube',desc:'Gestión del canal. Adicional sobre cualquier pack.'},
+  ]},
+  {id:'meta_ads',name:'Meta Ads',cat:'ads',services:[
+    {id:'meta_ads_setup',name:'Setup Avanzado de Campaña',desc:'Estructura de campañas, segmentación, objetivos y píxel de Meta.'},
+    {id:'meta_ads_gestion',name:'Gestión de Performance',desc:'Administración mensual: monitoreo CPM/CPC/CTR/ROAS, optimización, A/B testing e informe.'},
+    {id:'meta_ads_escalado',name:'Gestión de Escalado',desc:'Escalado vertical y horizontal para cuentas con historial.'},
+    {id:'meta_ads_auditoria',name:'Auditoría de Cuenta Publicitaria',desc:'Revisión diagnóstica con informe de hallazgos.'},
+  ]},
+  {id:'email',name:'Email Marketing',cat:'email',services:[
+    {id:'email_setup',name:'Setup Básico',desc:'Configuración de listas, formularios, SPF/DKIM y plantilla base.'},
+    {id:'email_gestion',name:'Gestión Mensual',desc:'Planificación, redacción, diseño y envío. Informe mensual.'},
+    {id:'email_secuencia',name:'Secuencia Automatizada',desc:'Secuencia de emails activada por acción del usuario.'},
+  ]},
+];
+
+// Catálogo unificado
+function buildCatalog(){
+  const all=[];
+  const add=(secs,who)=>secs.forEach(sec=>sec.services.forEach(sv=>{
+    const ex=all.find(x=>x.id===sv.id);
+    if(ex){ex.who.push(who);return;}
+    all.push({...sv,cat:sec.cat,who:[who],sectionName:sec.name,hasPacks:!!sv.packs,packs:sv.packs||null});
+  }));
+  add(DANIELA_SECTIONS,'Daniela');
+  add(VICTORIA_SECTIONS,'Victoria');
+  add(ORIANNA_SECTIONS,'Orianna');
+  add(PAULA_SECTIONS,'Paula');
+  return all;
+}
+const CATALOG=buildCatalog();
+
+// ── STATE ───────────────────────────────────────────────────
+let currentStep=1,fxRate=null;
+let danielaData=null,victoriaData=null,oriannaData=null,paulaData=null,pedroData=null;
+let cart=[],finalPrices={},currentCatFilter='all';
+let pinBuffer='';
+
+// ── AUTH ────────────────────────────────────────────────────
+function pinPress(d){if(pinBuffer.length>=4)return;pinBuffer+=d;updDots();if(pinBuffer.length===4)checkPin();}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updDots();}
+function pinClear(){pinBuffer='';updDots();document.getElementById('pin-error').textContent='';}
+function updDots(){for(let i=0;i<4;i++){document.getElementById('pd'+i).classList.toggle('filled',i<pinBuffer.length);document.getElementById('pd'+i).classList.remove('error');}}
+function checkPin(){
+  if(pinBuffer===PEDRO_PIN){document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';initApp();}
+  else{for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.add('error');document.getElementById('pin-error').textContent='PIN incorrecto';setTimeout(pinClear,800);}
+}
+function logout(){document.getElementById('auth-screen').style.display='flex';document.getElementById('app').style.display='none';pinBuffer='';updDots();}
+
+// ── INIT ────────────────────────────────────────────────────
+async function initApp(){
+  await Promise.all([fetchFx(),loadAllData()]);
+  renderServicesList();
+  renderHistorial();
+}
+async function fetchFx(){
+  try{const r=await fetch('https://dolarapi.com/v1/dolares/oficial');const d=await r.json();fxRate=d.venta;
+    document.getElementById('fx-val').textContent='$ '+fxRate.toLocaleString('es-AR',{minimumFractionDigits:2});
+    document.getElementById('fx-time').textContent='· '+new Date(d.fechaActualizacion).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('fx-dot').classList.add('live');}
+  catch(e){document.getElementById('fx-val').textContent='No disponible';fxRate=1000;}
+}
+async function fetchScript(url,pin){
+  try{const r=await fetch(`${url}?pin=${encodeURIComponent(pin)}`);const d=await r.json();if(d.ok&&d.data)return d.data;return null;}catch(e){return null;}
+}
+async function loadAllData(){
+  document.getElementById('data-status').textContent='Cargando precios…';
+  const [d,v,o,p,pe]=await Promise.allSettled([
+    fetchScript(DANIELA_SCRIPT,DANIELA_PIN),
+    fetchScript(VICTORIA_SCRIPT,VICTORIA_PIN),
+    fetchScript(ORIANNA_SCRIPT,ORIANNA_PIN),
+    fetchScript(PAULA_SCRIPT,PAULA_PIN),
+    fetchScript(PEDRO_SCRIPT,PEDRO_PIN),
+  ]);
+  danielaData=d.status==='fulfilled'?d.value:null;
+  victoriaData=v.status==='fulfilled'?v.value:null;
+  oriannaData=o.status==='fulfilled'?o.value:null;
+  paulaData=p.status==='fulfilled'?p.value:null;
+  pedroData=pe.status==='fulfilled'?pe.value:null;
+  const loaded=[danielaData,victoriaData,oriannaData,paulaData,pedroData].filter(Boolean).length;
+  document.getElementById('data-status').textContent=`${loaded}/5 fuentes cargadas`;
+}
+
+// ── NAV ─────────────────────────────────────────────────────
+function goStep(n){
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  document.getElementById('tab-'+currentStep).classList.remove('active');
+  currentStep=n;
+  document.getElementById('step-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  document.getElementById('footer-info').textContent='Paso '+n+' de 5';
+  const prev=document.getElementById('btn-prev');
+  prev.style.opacity=n===1?'.4':'1';prev.disabled=n===1;
+  document.getElementById('btn-next').textContent=n>=4?'Ver historial →':'Siguiente →';
+  if(n===3)buildPricingTable();
+  if(n===4)renderPreview();
+  if(n===5)renderHistorial();
+}
+function stepNext(){if(currentStep===1&&!validateStep1())return;if(currentStep<5)goStep(currentStep+1);}
+function stepPrev(){if(currentStep>1)goStep(currentStep-1);}
+function validateStep1(){const n=document.getElementById('cli-nombre').value.trim();if(!n){showToast('Ingresá el nombre del cliente','error');return false;}return true;}
+
+function selectRadio(gid,el){document.querySelectorAll('#'+gid+' .radio-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+function getRadioVal(gid){const s=document.querySelector('#'+gid+' .radio-btn.selected');return s?s.dataset.val:null;}
+function selectRadioVal(gid,val){document.querySelectorAll('#'+gid+' .radio-btn').forEach(b=>b.classList.toggle('selected',b.dataset.val===val));}
+
+// ── SERVICIOS ───────────────────────────────────────────────
+function filterCat(btn){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentCatFilter=btn.dataset.cat;renderServicesList();}
+function renderServicesList(){
+  const list=document.getElementById('services-list');
+  const f=currentCatFilter==='all'?CATALOG:CATALOG.filter(s=>s.cat===currentCatFilter);
+  list.innerHTML=f.map(sv=>{
+    const inCart=cart.some(c=>c.id===sv.id);
+    return `<div class="service-item ${inCart?'in-cart':''}" id="si-${sv.id}">
+      <div class="service-info">
+        <div class="service-name">${sv.name}</div>
+        <div class="service-desc">${sv.desc}</div>
+        <div class="service-badges">
+          <span class="badge badge-cat">${sv.sectionName}</span>
+          ${sv.who.map(w=>`<span class="badge badge-who">${w}</span>`).join('')}
+          ${sv.hasPacks?'<span class="badge badge-cat">packs</span>':''}
+        </div>
+      </div>
+      <button class="service-add" onclick="toggleCart('${sv.id}')">${inCart?'✓':'+'}</button>
+    </div>`;
+  }).join('')||'<div style="text-align:center;color:var(--muted);padding:20px;font-size:12px;">Sin resultados</div>';
+}
+
+// ── CARRITO ─────────────────────────────────────────────────
+function toggleCart(id){
+  const idx=cart.findIndex(c=>c.id===id);
+  if(idx>=0){cart.splice(idx,1);}
+  else{const sv=CATALOG.find(s=>s.id===id);if(!sv)return;cart.push({id:sv.id,name:sv.name,cat:sv.cat,who:sv.who,desc:sv.desc,hasPacks:sv.hasPacks,pack:sv.hasPacks?'x4':null});}
+  renderServicesList();renderCart();
+}
+function renderCart(){
+  const el=document.getElementById('cart-items');
+  document.getElementById('cart-count').textContent=cart.length;
+  if(!cart.length){el.innerHTML='<div class="cart-empty">Agregá servicios del catálogo</div>';updateCartTotals();return;}
+  el.innerHTML=cart.map(item=>`<div class="cart-item">
+    <div class="cart-item-info">
+      <div class="cart-item-name">${item.name}</div>
+      <div class="cart-item-cat">${item.who.join(' + ')}</div>
+      ${item.hasPacks?`<div class="cart-pack-sel"><select onchange="cartSetPack('${item.id}',this.value)">
+        <option ${item.pack==='x1'?'selected':''} value="x1">x1</option>
+        <option ${item.pack==='x4'?'selected':''} value="x4">x4 — Pack Básico</option>
+        <option ${item.pack==='x8'?'selected':''} value="x8">x8 — Pack Avanzado</option>
+        <option ${item.pack==='x10'?'selected':''} value="x10">x10 — Pack Premium</option>
+        <option ${item.pack==='x12'?'selected':''} value="x12">x12 — Pack Ultra</option>
+      </select></div>`:''}
+    </div>
+    <button class="cart-remove" onclick="toggleCart('${item.id}')">×</button>
+  </div>`).join('');
+  updateCartTotals();
+}
+function cartSetPack(id,pack){const item=cart.find(c=>c.id===id);if(item)item.pack=pack;}
+function updateCartTotals(){
+  let costo=0;cart.forEach(item=>{costo+=getCostARS(item);});
+  const ovh=parseFloat(document.getElementById('overhead-pct')?.value||20)/100;
+  const overhead=costo*ovh;const base=costo+overhead;
+  document.getElementById('cart-costo').textContent=costo?formatARS(costo):'—';
+  document.getElementById('cart-overhead').textContent=overhead?formatARS(overhead):'—';
+  document.getElementById('cart-base').textContent=base?formatARS(base):'—';
+}
+
+// ── PRECIOS ─────────────────────────────────────────────────
+function getCostARS(item){let t=0;item.who.forEach(who=>{t+=getPriceFrom(who,item.id,item.pack);});return t;}
+function getPriceFrom(who,id,pack){
+  try{
+    if(who==='Daniela'&&danielaData){
+      for(const sec of Object.values(danielaData)){if(typeof sec!=='object'||!sec)continue;if(sec[id]!==undefined)return parseFloat(sec[id])*(fxRate||1000)||0;}
+      if(danielaData[id]!==undefined)return parseFloat(danielaData[id])*(fxRate||1000)||0;
+    }
+    if(who==='Victoria'&&victoriaData){
+      for(const sec of Object.values(victoriaData)){if(typeof sec!=='object'||!sec)continue;if(sec[id]!==undefined)return parseFloat(sec[id])||0;}
+      if(victoriaData[id]!==undefined)return parseFloat(victoriaData[id])||0;
+    }
+    if(who==='Orianna'&&oriannaData){
+      const pk=pack||'x4';
+      if(oriannaData.packPrices?.[id]?.[pk])return parseFloat(oriannaData.packPrices[id][pk])||0;
+      if(oriannaData.prices?.[id])return parseFloat(oriannaData.prices[id])||0;
+      for(const sec of Object.values(oriannaData)){if(typeof sec!=='object'||!sec)continue;if(sec[id]?.[pk])return parseFloat(sec[id][pk])||0;if(sec[id]!==undefined)return parseFloat(sec[id])||0;}
+    }
+    if(who==='Paula'&&paulaData){
+      for(const sec of Object.values(paulaData)){if(typeof sec!=='object'||!sec)continue;if(sec[id]!==undefined)return parseFloat(sec[id])||0;}
+      if(paulaData[id]!==undefined)return parseFloat(paulaData[id])||0;
+    }
+  }catch(e){}
+  return 0;
+}
+
+// ── PRICING TABLE ───────────────────────────────────────────
+function buildPricingTable(){
+  const ovh=parseFloat(document.getElementById('overhead-pct').value)/100||0.20;
+  const moneda=getRadioVal('moneda')||'ARS';
+  document.getElementById('moneda-label').textContent=moneda==='USD20'?'USD +20%':moneda;
+  const tbody=document.getElementById('pricing-tbody');
+  tbody.innerHTML='';
+  let totCosto=0,totFinal=0;
+  cart.forEach(item=>{
+    const costARS=getCostARS(item);
+    const overhead=costARS*ovh;
+    const base=costARS+overhead;
+    const m=MARGENES[item.cat]||.40;
+    const sug=base/(1-m);
+    if(!finalPrices[item.id])finalPrices[item.id]=Math.round(sug);
+    totCosto+=costARS;totFinal+=finalPrices[item.id];
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>
+        <div style="font-size:12px;color:var(--text);">${item.name}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px;">${item.who.join(' + ')}${item.pack?' · '+item.pack:''}</div>
+      </td>
+      <td class="muted-val">${formatDisp(costARS,moneda)}</td>
+      <td class="muted-val">${formatDisp(overhead,moneda)}</td>
+      <td><span class="margin-badge">${Math.round(m*100)}%</span></td>
+      <td class="muted-val">${formatDisp(sug,moneda)}</td>
+      <td><input class="price-input" type="number" value="${toDisp(finalPrices[item.id],moneda).toFixed(0)}" onchange="updFinalPrice('${item.id}',this.value,'${moneda}')" min="0"></td>`;
+    tbody.appendChild(row);
+  });
+  const ovhTot=totCosto*ovh,base=totCosto+ovhTot,mReal=totFinal>0?(totFinal-base)/totFinal*100:0;
+  document.getElementById('pricing-summary').innerHTML=`
+    <div style="font-family:'Syne',sans-serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Resumen</div>
+    <div class="summary-row"><span>Costo de producción</span><span>${formatDisp(totCosto,moneda)}</span></div>
+    <div class="summary-row"><span>Overhead (${Math.round(ovh*100)}%)</span><span>${formatDisp(ovhTot,moneda)}</span></div>
+    <div class="summary-row"><span>Base total</span><span>${formatDisp(base,moneda)}</span></div>
+    <div class="summary-row"><span>Margen neto promedio</span><span style="color:var(--lime)">${mReal.toFixed(1)}%</span></div>
+    <div class="summary-row total"><span>Total a presentar al cliente</span><span class="val">${formatDisp(totFinal,moneda)}</span></div>`;
+}
+function updFinalPrice(id,val,moneda){
+  const n=parseFloat(val)||0;
+  let ars=n;
+  if(moneda==='USD')ars=n*(fxRate||1000);
+  else if(moneda==='USD20')ars=n*(fxRate||1000)/1.2;
+  finalPrices[id]=Math.round(ars);
+}
+
+// ── PREVIEW ─────────────────────────────────────────────────
+function renderPreview(){
+  const moneda=getRadioVal('moneda')||'ARS';
+  const tipo=getRadioVal('tipo-cliente')||'pyme';
+  const nombre=document.getElementById('cli-nombre').value||'—';
+  const contacto=document.getElementById('cli-contacto').value;
+  const email=document.getElementById('cli-email').value;
+  const tel=document.getElementById('cli-tel').value;
+  const num='CS-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*999)+1).padStart(3,'0');
+  const fecha=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  const venc=new Date(Date.now()+30*86400000).toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  const ovh=parseFloat(document.getElementById('overhead-pct').value)/100||.20;
+  let totFinalARS=0;cart.forEach(item=>{totFinalARS+=finalPrices[item.id]||Math.round(getCostARS(item)*(1+ovh)/(1-(MARGENES[item.cat]||.40)));});
+  const cats=[...new Set(cart.map(i=>i.cat))];
+  const hasD=cats.some(c=>['disenio','branding'].includes(c));
+  const hasAV=cats.includes('audiovisual');
+
+  let pagoText='';
+  if(moneda==='ARS'){
+    pagoText=tipo==='pyme'
+      ?'El pago se realiza en pesos argentinos mediante transferencia bancaria. Se requiere el 50% del total al inicio del proyecto y el 50% restante contra entrega de los primeros entregables. Para servicios de gestión mensual, el pago es por adelantado al inicio de cada período.'
+      :'El pago se realiza en pesos argentinos mediante transferencia bancaria. Se requiere el 100% del total al inicio del proyecto o, para proyectos de mayor envergadura, un esquema de pagos acordado por escrito.';
+  }else{
+    pagoText='El pago se realiza en dólares estadounidenses mediante transferencia bancaria internacional o criptomonedas estables (USDT/USDC). Se requiere el 100% al inicio.';
+    if(moneda==='USD20')pagoText+=' La cotización incluye una alícuota del 20% correspondiente a costos de gestión de divisas.';
+  }
+
+  document.getElementById('pdf-preview').innerHTML=`
+    <div class="pdf-header">
+      <div>
+        <div class="pdf-logo-name">Contentive Studio</div>
+        <div class="pdf-logo-sub">Estudio de Contenido Creativo · Buenos Aires</div>
+        <div style="display:flex;gap:5px;margin-top:8px;">
+          <div style="width:5px;height:5px;border-radius:50%;background:#F5A623;"></div>
+          <div style="width:5px;height:5px;border-radius:50%;background:#B8E04A;"></div>
+          <div style="width:5px;height:5px;border-radius:50%;background:#3a3a3a;"></div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="pdf-num">PRESUPUESTO ${num}</div>
+        <div class="pdf-date">Emitido el ${fecha}</div>
+        <div class="pdf-date">Válido hasta el ${venc}</div>
+      </div>
+    </div>
+    <div class="pdf-body">
+      <div class="pdf-section">
+        <div class="pdf-section-label">Datos del cliente</div>
+        <div class="pdf-client-grid">
+          <div><div class="pdf-client-label">Empresa / Cliente</div><div class="pdf-client-val">${nombre}</div></div>
+          ${contacto?`<div><div class="pdf-client-label">Contacto</div><div class="pdf-client-val">${contacto}</div></div>`:''}
+          ${email?`<div><div class="pdf-client-label">Email</div><div class="pdf-client-val">${email}</div></div>`:''}
+          ${tel?`<div><div class="pdf-client-label">Teléfono</div><div class="pdf-client-val">${tel}</div></div>`:''}
+          <div><div class="pdf-client-label">Moneda</div><div class="pdf-client-val">${moneda==='USD20'?'USD +20%':moneda}</div></div>
+        </div>
+      </div>
+      <div class="pdf-section">
+        <div class="pdf-section-label">Detalle de servicios</div>
+        <table class="pdf-table">
+          <thead><tr><th style="text-align:left;">Servicio</th><th>Precio</th></tr></thead>
+          <tbody>${cart.map(item=>{
+            const priceARS=finalPrices[item.id]||Math.round(getCostARS(item)*(1+ovh)/(1-(MARGENES[item.cat]||.40)));
+            return `<tr>
+              <td><div class="pdf-table-name">${item.name}${item.pack?' <span style="color:var(--muted);font-size:10px;">· '+item.pack+'</span>':''}</div><div class="pdf-table-desc">${item.desc||''}</div></td>
+              <td style="color:var(--text);font-weight:500;">${formatDisp(priceARS,moneda)}</td></tr>`;
+          }).join('')}</tbody>
+        </table>
+        <div class="pdf-total-row final" style="margin-top:12px;">
+          <span>Total del presupuesto</span>
+          <span class="pdf-total-val">${formatDisp(totFinalARS,moneda)}</span>
+        </div>
+      </div>
+      <div class="pdf-section">
+        <div class="pdf-section-label">Términos y condiciones</div>
+        <div class="pdf-tc-block"><div class="pdf-tc-title">A · Forma y modalidad de pago</div><div class="pdf-tc-text">${pagoText}</div></div>
+        <div class="pdf-tc-block"><div class="pdf-tc-title">B · Vigencia y actualización</div><div class="pdf-tc-text">Este presupuesto tiene una vigencia de 30 días calendario a partir de la fecha de emisión. Pasado ese plazo, los valores se ajustarán de acuerdo a la variación del IPC publicado por el INDEC o al tipo de cambio vigente en caso de presupuestos en moneda extranjera. Contentive Studio se reserva el derecho de actualizar sus tarifas con un preaviso mínimo de 15 días para proyectos en curso.</div></div>
+        <div class="pdf-tc-block"><div class="pdf-tc-title">C · Cancelación del proyecto</div><div class="pdf-tc-text">En caso de cancelación por parte del cliente, los montos abonados no son reembolsables. Si la cancelación ocurre después del inicio del trabajo, se facturará el porcentaje del proyecto completado hasta ese momento. Contentive Studio se reserva el derecho de cancelar un proyecto si el cliente no provee los materiales o la información requerida en los plazos acordados, sin obligación de reintegro.</div></div>
+        ${hasD?`<div class="pdf-tc-block"><div class="pdf-tc-title">D · Propiedad intelectual y entrega de archivos</div><div class="pdf-tc-text">Todos los materiales diseñados por Contentive Studio son propiedad del estudio hasta la recepción del pago total. Una vez acreditado el pago final, se transfieren al cliente todos los derechos de uso comercial de las piezas entregadas. Los archivos fuente (AI, PSD, INDD) se entregan únicamente en los servicios que lo especifican. Las revisiones incluidas están detalladas en la propuesta; las modificaciones adicionales se cotizarán por separado.</div></div>`:''}
+        ${hasAV?`<div class="pdf-tc-block"><div class="pdf-tc-title">E · Producción audiovisual</div><div class="pdf-tc-text">Los presupuestos audiovisuales incluyen las jornadas de rodaje y/o edición especificadas. Días adicionales se cotizarán aparte. Los archivos finales se entregan en MP4 (H.264, 1080p o 4K según acuerdo). El material en bruto es propiedad de Contentive Studio y no se entrega al cliente. Las revisiones de edición incluidas son las especificadas en cada pack; las adicionales tienen costo extra.</div></div>`:''}
+        ${hasD?`<div class="pdf-tc-block"><div class="pdf-tc-title">F · Revisiones y modificaciones</div><div class="pdf-tc-text">Cada servicio incluye el número de rondas de revisión especificado. Las revisiones deben enviarse de forma unificada y por escrito. Cambios de dirección creativa o de brief luego de aprobada una etapa son considerados trabajos nuevos y se presupuestan por separado. Contentive Studio no se hace responsable por errores tipográficos o de información que el cliente haya aprobado.</div></div>`:''}
+        <div class="pdf-tc-block"><div class="pdf-tc-title">G · Incumplimiento y falta de respuesta</div><div class="pdf-tc-text">Si el cliente no responde a solicitudes de aprobación, materiales o pagos en un plazo de 10 días hábiles, el proyecto se considerará pausado sin obligación de avance por parte del estudio. Los tiempos de entrega se reprogramarán a partir de la reanudación efectiva. El incumplimiento en los pagos acordados puede resultar en la suspensión inmediata del servicio y la retención de los archivos finales hasta la regularización del saldo.</div></div>
+      </div>
+    </div>
+    <div class="pdf-footer">
+      <div>
+        <div style="color:var(--text);font-size:11px;margin-bottom:2px;">Pedro Díaz · Director</div>
+        <div>hola@contentivestudio.com · contentivestudio.com</div>
+      </div>
+      <div style="display:flex;gap:5px;">
+        <div style="width:5px;height:5px;border-radius:50%;background:#F5A623;"></div>
+        <div style="width:5px;height:5px;border-radius:50%;background:#B8E04A;"></div>
+        <div style="width:5px;height:5px;border-radius:50%;background:#3a3a3a;"></div>
+      </div>
+    </div>`;
+}
+function downloadPDF(){window.print();}
+
+// ── HISTORIAL ───────────────────────────────────────────────
+function saveToHistory(){
+  const nombre=document.getElementById('cli-nombre').value.trim();
+  if(!nombre){showToast('Falta el nombre del cliente','error');return;}
+  const moneda=getRadioVal('moneda')||'ARS';
+  const tipo=getRadioVal('tipo-cliente')||'pyme';
+  const ovh=parseFloat(document.getElementById('overhead-pct').value)/100||.20;
+  let total=0;cart.forEach(item=>{total+=finalPrices[item.id]||Math.round(getCostARS(item)*(1+ovh)/(1-(MARGENES[item.cat]||.40)));});
+  const entry={
+    id:Date.now(),fecha:new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    nombre,contacto:document.getElementById('cli-contacto').value,email:document.getElementById('cli-email').value,
+    tel:document.getElementById('cli-tel').value,tipo,moneda,
+    servicios:cart.map(i=>({...i})),totalARS:total,
+    overheadPct:Math.round(ovh*100),finalPrices:{...finalPrices},
+  };
+  const hist=getHistory();hist.unshift(entry);
+  localStorage.setItem('contentive_presupuestos',JSON.stringify(hist));
+  showToast('Guardado en historial ✓','ok');renderHistorial();
+}
+function getHistory(){try{return JSON.parse(localStorage.getItem('contentive_presupuestos')||'[]');}catch(e){return[];}}
+function clearHistory(){localStorage.removeItem('contentive_presupuestos');renderHistorial();}
+function renderHistorial(){
+  const hist=getHistory();
+  const search=(document.getElementById('hist-search')?.value||'').toLowerCase();
+  const fMon=document.getElementById('hist-moneda')?.value||'';
+  const fTipo=document.getElementById('hist-tipo')?.value||'';
+  const filtered=hist.filter(e=>{
+    if(search&&!e.nombre.toLowerCase().includes(search)&&!e.servicios.some(s=>s.name.toLowerCase().includes(search)))return false;
+    if(fMon&&e.moneda!==fMon)return false;
+    if(fTipo&&e.tipo!==fTipo)return false;
+    return true;
+  });
+  const grid=document.getElementById('historial-grid');
+  if(!filtered.length){grid.innerHTML='<div class="hist-empty">No hay presupuestos guardados</div>';return;}
+  grid.innerHTML=filtered.map(e=>{
+    const svNames=e.servicios.slice(0,3).map(s=>s.name).join(', ')+(e.servicios.length>3?' +'+(e.servicios.length-3)+' más':'');
+    return `<div class="hist-card" onclick="loadFromHistory(${e.id})">
+      <div class="hist-card-header"><div class="hist-client">${e.nombre}</div><div class="hist-date">${e.fecha}</div></div>
+      <div class="hist-services">${svNames}</div>
+      <div class="hist-footer"><div class="hist-total">${formatDisp(e.totalARS,e.moneda)}</div><div class="hist-currency">${e.moneda==='USD20'?'USD+20%':e.moneda} · ${e.tipo}</div></div>
+    </div>`;
+  }).join('');
+}
+function loadFromHistory(id){
+  const entry=getHistory().find(e=>e.id===id);if(!entry)return;
+  document.getElementById('cli-nombre').value=entry.nombre||'';
+  document.getElementById('cli-contacto').value=entry.contacto||'';
+  document.getElementById('cli-email').value=entry.email||'';
+  document.getElementById('cli-tel').value=entry.tel||'';
+  selectRadioVal('tipo-cliente',entry.tipo);selectRadioVal('moneda',entry.moneda);
+  cart=entry.servicios.map(s=>({...s}));
+  finalPrices={...entry.finalPrices};
+  document.getElementById('overhead-pct').value=entry.overheadPct||20;
+  goStep(4);showToast('Presupuesto cargado','ok');
+}
+
+// ── AI SEARCH ────────────────────────────────────────────────
+async function aiSearch(){
+  const q=document.getElementById('ai-query').value.trim();if(!q)return;
+  const btn=document.getElementById('ai-btn'),sugg=document.getElementById('ai-suggestions');
+  btn.disabled=true;sugg.innerHTML='<div class="ai-thinking">Analizando necesidad…</div>';
+  const catalogSummary=CATALOG.map(s=>s.id+': '+s.name+' ['+s.cat+']').join('\n');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+        system:'Sos un asistente de ventas de Contentive Studio. Dado un texto describiendo la necesidad de un cliente, sugerí los IDs de servicios más relevantes del catálogo. Respondé SOLO con JSON válido: {"ids":["id1","id2"],"razon":"breve explicación"}. Máximo 6 sugerencias. Sin markdown ni backticks.',
+        messages:[{role:'user',content:'Necesidad: "'+q+'"\n\nCatálogo:\n'+catalogSummary}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'{}';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    const ids=parsed.ids||[];
+    if(!ids.length){sugg.innerHTML='<div style="font-size:11px;color:var(--muted);">No encontré coincidencias.</div>';}
+    else{
+      const chips=ids.map(id=>{const sv=CATALOG.find(s=>s.id===id);if(!sv)return'';
+        const inCart=cart.some(c=>c.id===id);
+        return`<div class="ai-chip ${inCart?'added':''}" onclick="addFromAI('${id}',this)">${sv.name}</div>`;}).join('');
+      sugg.innerHTML=chips+(parsed.razon?`<div style="font-size:10px;color:var(--muted);margin-top:7px;width:100%;">💡 ${parsed.razon}</div>`:'');
+    }
+  }catch(e){sugg.innerHTML='<div style="font-size:11px;color:var(--red);">Error al conectar con IA.</div>';}
+  btn.disabled=false;
+}
+function addFromAI(id,chip){if(!cart.some(c=>c.id===id)){toggleCart(id);chip.classList.add('added');chip.textContent='✓ '+chip.textContent;}}
+
+// ── FORMATO ──────────────────────────────────────────────────
+function toDisp(ars,moneda){if(moneda==='USD')return ars/(fxRate||1000);if(moneda==='USD20')return ars/(fxRate||1000)*1.2;return ars;}
+function formatDisp(ars,moneda){const n=toDisp(ars,moneda);if(moneda==='ARS')return '$ '+Math.round(n).toLocaleString('es-AR');return 'u$s '+n.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function formatARS(n){return '$ '+Math.round(n).toLocaleString('es-AR');}
+
+// ── TOAST ────────────────────────────────────────────────────
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>

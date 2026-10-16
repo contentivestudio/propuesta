@@ -188,6 +188,7 @@ table.kpi{width:100%;border-collapse:collapse;font-size:.95rem;min-width:420px}
 .pair h3{font-size:1.15rem}
 .pair p{color:var(--muted);font-size:.95rem}
 @media (max-width:640px){.pair{grid-template-columns:minmax(0,1fr)}}
+ol.q.big li span{font:500 clamp(1.15rem,1.8vw,1.4rem)/1.35 var(--body)}
 /* Búsqueda */
 .search{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(24px,4vw,56px);align-items:start}
 .shot{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:zoom-in}
@@ -350,179 +351,41 @@ body.notes-on #copyBtn{display:inline-block}
   </div>
 </section>
 
-<!-- 03 Agenda -->
-<section id="agenda">
+<!-- Conversación -->
+<section id="charla" data-block="C" data-title="Conversación">
+  <div class="wrap"><div class="block">
+    <div class="block-head"><span class="eyebrow">Hoy, una conversación</span><h2>Queremos escucharte.</h2>
+      <p class="why"><b>Sin respuestas correctas</b>Hablemos en términos generales. El detalle lo vemos después, con tiempo.</p></div>
+    <div>
+      <ol class="q big">
+        <li data-id="1"><span>¿Por qué ahora? ¿Qué te hizo pensar que Seklou necesitaba este cambio?</span></li>
+        <li data-id="2"><span>Cuando ves la marca hoy en redes, la web o Mercado Libre, ¿qué es lo que más te molesta?</span></li>
+        <li data-id="3"><span>¿Cómo te imaginas a Seklou dentro de dos años?</span></li>
+        <li data-id="4"><span>¿Hay alguna marca, de cualquier rubro, que te gustaría que Seklou se pareciera?</span></li>
+        <li data-id="5"><span>¿Qué es lo que no puede cambiar?</span></li>
+      </ol>
+      <div class="notes"><label for="nC">Notas de la reunión</label><textarea id="nC" data-note="C" placeholder="Frases textuales, ideas, pendientes…"></textarea></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- Formulario -->
+<section id="formulario">
   <div class="wrap">
-    <span class="eyebrow">Cómo usamos esta reunión</span>
-    <h2>Ocho bloques de preguntas. Lo que salga de hoy es el brief del proyecto.</h2>
-    <p class="muted">No hay respuestas incorrectas. Si algo no está definido todavía, también es información útil.</p>
-    <nav class="agenda" aria-label="Bloques">
-      <a href="#bA"><span class="l">A</span><span class="t">Negocio y rumbo</span><span class="s">6 preg.</span></a>
-      <a href="#bB"><span class="l">B</span><span class="t">A quién le hablamos</span><span class="s">6 preg.</span></a>
-      <a href="#bC"><span class="l">C</span><span class="t">Personalidad y tono</span><span class="s">6 preg.</span></a>
-      <a href="#bD"><span class="l">D</span><span class="t">Lo que ya existe</span><span class="s">6 preg.</span></a>
-      <a href="#bE"><span class="l">E</span><span class="t">Producto y lenguaje técnico</span><span class="s">6 preg.</span></a>
-      <a href="#bF"><span class="l">F</span><span class="t">Mapa de canales</span><span class="s">9 preg.</span></a>
-      <a href="#bG"><span class="l">G</span><span class="t">Imagen y producción</span><span class="s">6 preg.</span></a>
-      <a href="#bH"><span class="l">H</span><span class="t">Cómo trabajamos</span><span class="s">7 preg.</span></a>
-    </nav>
+    <span class="eyebrow">Después de hoy</span>
+    <h2>Un formulario para pensarlo con calma.</h2>
+    <p class="lead muted">Hay preguntas que necesitan tiempo, datos o consultarlas con alguien más. Por eso te enviamos un formulario para completar a tu ritmo, en una o varias veces. "Todavía no lo sé" también es una respuesta válida.</p>
+    <div class="grid4">
+      <div><h3>Negocio y rumbo</h3><p>Origen, objetivos, competencia y canales de venta.</p></div>
+      <div><h3>Cliente</h3><p>Quién compra, qué problema tiene y qué dudas aparecen.</p></div>
+      <div><h3>Personalidad y tono</h3><p>Cómo habla Seklou, qué es y qué nunca debería parecer.</p></div>
+      <div><h3>Lo que ya existe</h3><p>Archivos del logo, colores, piezas actuales y quién las diseña.</p></div>
+      <div><h3>Producto</h3><p>Modelos, datos técnicos, app, garantía y postventa.</p></div>
+      <div><h3>Canales</h3><p>Redes, web, Mercado Libre, anuncios y buscadores.</p></div>
+      <div><h3>Imagen</h3><p>Espacios, personas, fotografía, renders y referencias.</p></div>
+      <div><h3>Forma de trabajo</h3><p>Aprobaciones, fechas clave y prioridades.</p></div>
+    </div>
   </div>
-</section>
-
-<!-- A -->
-<section id="bA" data-block="A" data-title="Negocio y rumbo">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">A</span><h2>Negocio y rumbo</h2>
-      <p class="why"><b>Por qué importa</b>El universo tiene que acompañar hacia dónde va Seklou, no solo describir dónde está hoy.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="A1"><span>¿Cómo nació Seklou y qué significa el nombre?</span></li>
-        <li data-id="A2"><span>¿Dónde imaginan a la marca en dos años?<small>Tamaño, presencia, nuevos canales o mercados.</small></span></li>
-        <li data-id="A3"><span>¿Seklou va a ser siempre una marca de deshumidificadores, o piensan sumar otras categorías?<small>Define si el sistema se diseña cerrado o con margen para crecer.</small></span></li>
-        <li data-id="A4"><span>¿Qué puede decir Seklou que ninguna otra marca puede?<small>WiFi, ionizador y compresor en los cuatro modelos, ¿hay algo más?</small></span></li>
-        <li data-id="A5"><span>¿Quiénes son sus competidores directos y qué marca sienten que hoy comunica mejor que ustedes?</span></li>
-        <li data-id="A6"><span>¿Qué canal vende más hoy y cuál quieren que crezca?</span></li>
-      </ol>
-      <div class="notes"><label for="nA">Notas de la reunión</label><textarea id="nA" data-note="A" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- B -->
-<section id="bB" data-block="B" data-title="A quién le hablamos">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">B</span><h2>A quién le hablamos</h2>
-      <p class="why"><b>Por qué importa</b>El tono, la imagen y los mensajes se eligen pensando en una persona concreta.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="B1"><span>¿Quién compra hoy un Seklou?<small>Edad, zona, tipo de vivienda, quién decide la compra en la casa.</small></span></li>
-        <li data-id="B2"><span>¿Qué problema lo lleva a buscar un deshumidificador?<small>Paredes con moho, ropa que no seca, olor a humedad, alergias, cuidado de objetos.</small></span></li>
-        <li data-id="B3"><span>¿Venden solo a hogares o también a oficinas, comercios o depósitos?</span></li>
-        <li data-id="B4"><span>¿Qué dudas aparecen antes de comprar?<small>Consumo eléctrico, ruido, tamaño, mantenimiento, qué modelo elegir.</small></span></li>
-        <li data-id="B5"><span>¿Qué es lo que más preguntan en Mercado Libre y por mensaje privado?</span></li>
-        <li data-id="B6"><span>¿Cómo es el perfil del afiliado o referido y qué tiene que sentir cuando ve la marca?</span></li>
-      </ol>
-      <div class="notes"><label for="nB">Notas de la reunión</label><textarea id="nB" data-note="B" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- C -->
-<section id="bC" data-block="C" data-title="Personalidad y tono">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">C</span><h2>Personalidad y tono</h2>
-      <p class="why"><b>Por qué importa</b>Es lo que hoy cambia más de un canal a otro. Si Seklou habla igual en todos lados, el resto se ordena.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="C1"><span>Si Seklou fuera una persona, ¿cómo la describirían en tres palabras?</span></li>
-        <li data-id="C2"><span>¿Qué tres cosas Seklou nunca debería parecer?</span></li>
-        <li data-id="C3"><span>Entre experta y técnica, o cercana y cotidiana, ¿dónde se ubica?</span></li>
-        <li data-id="C4"><span>¿Cómo le habla Seklou a su cliente: vos, tú o usted?<small>Y si cambia según el canal.</small></span></li>
-        <li data-id="C5"><span>¿El humor tiene lugar en la marca? ¿Hasta dónde?</span></li>
-        <li data-id="C6"><span>¿Qué marcas admiran, de cualquier rubro, y qué les gusta de cada una?</span></li>
-      </ol>
-      <div class="notes"><label for="nC">Notas de la reunión</label><textarea id="nC" data-note="C" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- D -->
-<section id="bD" data-block="D" data-title="Lo que ya existe">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">D</span><h2>Lo que ya existe</h2>
-      <p class="why"><b>Por qué importa</b>Partimos del logo actual. Necesitamos saber con qué archivos contamos y qué del universo de hoy vale la pena rescatar.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="D1"><span>¿Tienen el logo en archivo vectorial original?<small>AI, SVG o PDF. ¿Existen versiones horizontal, vertical o isotipo?</small></span></li>
-        <li data-id="D2"><span>¿Hay colores o tipografías definidos como oficiales, aunque sea de manera informal?</span></li>
-        <li data-id="D3"><span>¿Existe algún manual, guía o presentación de marca anterior?</span></li>
-        <li data-id="D4"><span>De lo que publican hoy, ¿qué piezas sienten que sí los representan y cuáles no?</span></li>
-        <li data-id="D5"><span>¿Quién diseña hoy lo que no pasa por nuestro equipo?<small>Packaging, manuales, web, artes de publicaciones.</small></span></li>
-        <li data-id="D6"><span>Además del logo, ¿hay algo intocable?<small>Un color, una frase, un personaje, un formato.</small></span></li>
-      </ol>
-      <div class="notes"><label for="nD">Notas de la reunión</label><textarea id="nD" data-note="D" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- E -->
-<section id="bE" data-block="E" data-title="Producto y lenguaje técnico">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">E</span><h2>Producto y lenguaje técnico</h2>
-      <p class="why"><b>Por qué importa</b>Los datos técnicos aparecen en cada publicación. Tienen que decirse siempre igual y con la misma gráfica.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="E1"><span>¿Cómo se nombran los cuatro modelos y se mantiene esa nomenclatura?<small>Incluido el OL08.</small></span></li>
-        <li data-id="E2"><span>¿Qué dato define a cada modelo frente al cliente?<small>Litros por día, cobertura en m², tamaño del tanque, consumo.</small></span></li>
-        <li data-id="E3"><span>¿Tienen fichas técnicas oficiales y qué afirmaciones se pueden hacer con respaldo?</span></li>
-        <li data-id="E4"><span>¿Cómo funciona la app de WiFi? ¿Tiene marca propia o es de un tercero?</span></li>
-        <li data-id="E5"><span>¿Qué se puede prometer en garantía, servicio técnico y postventa?</span></li>
-        <li data-id="E6"><span>¿El packaging y los manuales se pueden intervenir, o vienen de fábrica?</span></li>
-      </ol>
-      <div class="notes"><label for="nE">Notas de la reunión</label><textarea id="nE" data-note="E" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- F -->
-<section id="bF" data-block="F" data-title="Mapa de canales">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">F</span><h2>Mapa de canales</h2>
-      <p class="why"><b>Por qué importa</b>Cada canal tiene reglas, formatos y responsables distintos. Así definimos dónde se aplica primero.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="F1"><span>¿Qué redes están activas y quién administra cada una?<small>Instagram, TikTok, Facebook, YouTube.</small></span></li>
-        <li data-id="F2"><span>Web: ¿en qué plataforma está, quién tiene acceso y quién la actualiza?</span></li>
-        <li data-id="F3"><span>Mercado Libre: ¿es tienda oficial? ¿Cuántas publicaciones hay y quién las carga?</span></li>
-        <li data-id="F4"><span>¿Usan WhatsApp Business, email marketing o firma de correo con marca?</span></li>
-        <li data-id="F5"><span>Anuncios en Meta y Google: ¿quién los arma, con qué piezas y por qué búsquedas pagan?</span></li>
-        <li data-id="F6"><span>¿Hay presencia física?<small>Locales, ferias, vehículos, uniformes, tarjetas.</small></span></li>
-        <li data-id="F7"><span>¿La web tiene Google Search Console y Analytics configurados? ¿Quién los revisa?</span></li>
-        <li data-id="F8"><span>¿Para qué búsquedas quieren aparecer primero sin pagar?<small>Por marca, por producto, por problema (moho, ropa que no seca).</small></span></li>
-        <li data-id="F9"><span>Si tuvieran que elegir, ¿dónde tiene que verse primero el nuevo universo?</span></li>
-      </ol>
-      <div class="notes"><label for="nF">Notas de la reunión</label><textarea id="nF" data-note="F" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
-<!-- G -->
-<section id="bG" data-block="G" data-title="Imagen y producción">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">G</span><h2>Imagen y producción</h2>
-      <p class="why"><b>Por qué importa</b>Fotos, videos e imágenes con IA tienen que sentirse parte de la misma marca.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="G1"><span>¿En qué espacios vive Seklou?<small>Departamento chico, casa familiar, oficina, comercio.</small></span></li>
-        <li data-id="G2"><span>Fotografía real, renders o imágenes con IA: ¿qué combinación les resulta creíble?</span></li>
-        <li data-id="G3"><span>¿Tienen renders o archivos 3D de fábrica de los modelos?</span></li>
-        <li data-id="G4"><span>¿Qué personas queremos ver con el producto?<small>Familias, jóvenes, mascotas, adultos mayores.</small></span></li>
-        <li data-id="G5"><span>La humedad pega más en otoño e invierno. ¿La comunicación cambia según la época del año?</span></li>
-        <li data-id="G6"><span>¿Tienen referencias visuales que les gusten? Imágenes, cuentas, campañas.</span></li>
-      </ol>
-      <div class="notes"><label for="nG">Notas de la reunión</label><textarea id="nG" data-note="G" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
-</section>
-
- <!-- H -->
-<section id="bH" data-block="H" data-title="Cómo trabajamos el proyecto">
-  <div class="wrap"><div class="block">
-    <div class="block-head"><span class="letter">H</span><h2>Cómo trabajamos</h2>
-      <p class="why"><b>Por qué importa</b>Fechas, aprobaciones y lo que ya está en marcha definen el orden del trabajo.</p></div>
-    <div>
-      <ol class="q">
-        <li data-id="H1"><span>¿Quién aprueba las decisiones de marca? ¿Una persona o varias?</span></li>
-        <li data-id="H2"><span>¿Qué fechas clave tenemos que respetar?<small>Black Friday, Cyber Monday, lanzamiento del modelo nuevo, temporada alta.</small></span></li>
-        <li data-id="H3"><span>La campaña de noviembre ya está en producción. ¿Sale como está y el universo nuevo se aplica después, o preferimos ajustarla?</span></li>
-        <li data-id="H4"><span>Los artes de descripción de Mercado Libre ya están en proceso. ¿Los integramos al nuevo sistema desde ahora?</span></li>
-        <li data-id="H5"><span>¿Quién implementa los cambios en la web: su equipo o el nuestro?</span></li>
-        <li data-id="H6"><span>¿Tienen un presupuesto o un rango definido para el proyecto?</span></li>
-        <li data-id="H7"><span>Dentro de seis meses, ¿qué tendría que haber pasado para que digan que el proyecto funcionó?</span></li>
-      </ol>
-      <div class="notes"><label for="nH">Notas de la reunión</label><textarea id="nH" data-note="H" placeholder="Respuestas, frases textuales, pendientes…"></textarea></div>
-    </div>
-  </div></div>
 </section>
 
 <!-- Referencias -->
@@ -628,9 +491,9 @@ body.notes-on #copyBtn{display:inline-block}
   <div class="wrap">
     <span class="eyebrow">Próximos pasos</span>
     <div class="next">
-      <div><span class="n">1</span><p>Les enviamos un brief resumido con todo lo conversado hoy para que lo validen.</p></div>
-      <div><span class="n">2</span><p>Presentamos la plataforma de marca y las primeras rutas visuales.</p></div>
-      <div><span class="n">3</span><p>Elegimos una ruta y avanzamos con el desarrollo completo del universo.</p></div>
+      <div><span class="n">1</span><p>Te enviamos el formulario y la lista de materiales.</p></div>
+      <div><span class="n">2</span><p>Con tus respuestas armamos el brief y la propuesta para validar juntos.</p></div>
+      <div><span class="n">3</span><p>Presentamos la plataforma de marca y las primeras rutas visuales.</p></div>
     </div>
     <p class="claim">Tu marca ya tiene algo que decir. <span>Nosotros hacemos que el mundo lo escuche.</span></p>
     <p class="muted">Contentive Studio · Buenos Aires</p>
@@ -702,7 +565,7 @@ body.notes-on #copyBtn{display:inline-block}
 </main>
 
 <div class="bar" role="toolbar" aria-label="Controles">
-  <span class="count" id="count">01 / 25</span>
+  <span class="count" id="count">01 / 18</span>
   <button type="button" id="copyBtn">Copiar notas</button>
   <button type="button" id="notesBtn" aria-pressed="false" title="Atajo: N">Modo notas</button>
 </div>

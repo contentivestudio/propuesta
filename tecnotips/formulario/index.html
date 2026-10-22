@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>TecnoTips · Formulario de marca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: intro + 8 bloques en columna única, barra de progreso fija abajo */
+:root{
+  --bg:#0e0e0e; --surface:#171615; --line:#2a2826;
+  --fg:#f0ede8; --muted:#9c968d;
+  --orange:#F5A623; --lime:#B8E04A;
+  --display:"Archivo Black","Arial Black",Impact,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Segoe UI",Arial,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.05rem/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:64px;padding-block:56px 24px}
+.eyebrow{font:600 .82rem/1 var(--cond);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.02;text-wrap:balance}
+h1{font-size:clamp(2.4rem,7vw,4.2rem)}
+h1 span{color:var(--orange);display:block}
+h2{font-size:clamp(1.7rem,4.4vw,2.4rem)}
+p{margin:0}
+.muted{color:var(--muted)}
+header{display:flex;flex-direction:column;gap:20px}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.how div{background:var(--bg);padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.how b{font:700 .78rem/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+.how p{font-size:.93rem;color:var(--muted)}
+.who{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+label.f{display:flex;flex-direction:column;gap:6px;font:600 .8rem/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+input[type=text],textarea{width:100%;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:12px;font:400 1rem/1.5 var(--body)}
+textarea{min-height:96px;resize:vertical}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--orange)}
+textarea:disabled{opacity:.4}
+section.block{display:flex;flex-direction:column;gap:22px;scroll-margin-top:24px}
+.bhead{display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--orange);padding-top:18px}
+.bhead .n{font:600 .85rem/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-variant-numeric:tabular-nums}
+.q{display:flex;flex-direction:column;gap:10px}
+.q .t{font:600 1.08rem/1.4 var(--body)}
+.q .h{font-size:.92rem;color:var(--muted);margin-top:-4px}
+.unk{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted);cursor:pointer;align-self:flex-start}
+.unk input{appearance:none;width:18px;height:18px;border:1.5px solid var(--line);border-radius:4px;margin:0;cursor:pointer;flex:none}
+.unk input:checked{background:var(--lime);border-color:var(--lime)}
+.unk input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.q.answered .t::after{content:" ✓";color:var(--lime)}
+.files{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.files b{font:700 .78rem/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+.files p{font-size:.92rem;color:var(--muted)}
+.send{background:var(--surface);border:1px solid var(--orange);border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font:700 .95rem/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;border:1px solid var(--orange)}
+.btn.primary{background:var(--orange);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn:hover,.btn:focus-visible{outline:none;border-color:var(--lime)}
+.btn.primary:hover,.btn.primary:focus-visible{background:var(--lime);border-color:var(--lime)}
+#out{display:none;min-height:220px;font-size:.88rem}
+.contact{font-size:.92rem;color:var(--muted)}
+.contact b{color:var(--fg);user-select:all}
+footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(14,14,14,.94);border-top:1px solid var(--line);backdrop-filter:blur(6px);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.track{flex:1;height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--lime);transition:width .3s}
+.pct{font:700 .95rem/1 var(--cond);letter-spacing:.06em;font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right}
+.saved{font:600 .78rem/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--lime);color:var(--bg);padding:9px 16px;border-radius:999px;font:700 .9rem/1 var(--cond);letter-spacing:.06em;text-transform:uppercase;z-index:20}
+@media (max-width:640px){.how,.who{grid-template-columns:minmax(0,1fr)}.saved{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">TecnoTips · Universo de marca</span>
+    <h1>Cuéntanos de TecnoTips<span>a tu ritmo.</span></h1>
+    <p class="muted">Este formulario reúne lo que el equipo de Contentive necesita para armar el universo de TecnoTips y rediseñar su tienda de Mercado Libre. No hay respuestas correctas y no hace falta escribir mucho: una idea o una frase alcanza.</p>
+    <div class="how">
+      <div><b>Se guarda solo</b><p id="how1">Puedes cerrarlo y volver cuando quieras desde este mismo dispositivo.</p></div>
+      <div><b>"Todavía no lo sé"</b><p>También es una respuesta válida y nos sirve.</p></div>
+      <div><b>Al final</b><p id="how3">Nos envías tus respuestas por WhatsApp con un solo botón.</p></div>
+    </div>
+    <div class="who">
+      <label class="f" for="nombre">Tu nombre<input type="text" id="nombre" data-k="nombre" autocomplete="name"></label>
+      <label class="f" for="rol">Tu rol en TecnoTips<input type="text" id="rol" data-k="rol"></label>
+    </div>
+  </header>
+
+  <div id="form"></div>
+
+  <section class="send" id="enviar">
+    <span class="eyebrow">Último paso</span>
+    <h2>Envíanos tus respuestas.</h2>
+    <p class="muted" id="sendp">Puedes enviarlas aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
+    <div class="btns">
+      <a class="btn primary" id="wa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+      <button class="btn ghost" type="button" id="copy">Copiar respuestas</button>
+    </div>
+    <textarea id="out" readonly aria-label="Respuestas para copiar"></textarea>
+    <p class="contact">Si prefieres el correo, copia tus respuestas y envíalas a <b>hola@contentivestudio.com</b></p>
+  </section>
+
+  <footer>Contentive Studio · Buenos Aires</footer>
+</main>
+
+<div class="bar" role="status" aria-live="polite">
+  <div class="bar-in">
+    <span class="saved" id="saved">Progreso guardado</span>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <span class="pct" id="pct">0%</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var WA='5491135701336';
+  var KEY='tecnotips-formulario-v1';
+  var FORM='tecnotips';
+  var BRAND='TecnoTips';
+  var ENDPOINT='';
+  var B=[
+  {
+    "t": "Negocio y rumbo",
+    "d": "Queremos entender qué es TecnoTips hoy y hacia dónde va, para que el universo de marca acompañe.",
+    "q": [
+      [
+        "¿Cómo nació TecnoTips y qué significa el nombre?"
+      ],
+      [
+        "¿Qué tipo de productos vende hoy y cómo se arma el catálogo?",
+        "Categorías, líneas, colores y variantes."
+      ],
+      [
+        "¿Cuáles son los productos que más venden y cuáles quieren impulsar?"
+      ],
+      [
+        "¿Qué puede decir TecnoTips que otras tiendas del rubro no pueden?"
+      ],
+      [
+        "¿Qué tiendas o marcas de Mercado Libre sientes que comunican mejor que ustedes?"
+      ]
+    ]
+  },
+  {
+    "t": "A quién le hablamos",
+    "d": "El tono, la imagen y los mensajes se eligen pensando en una persona concreta.",
+    "q": [
+      [
+        "¿Quién compra hoy en TecnoTips?",
+        "Edad, zona, si compra para sí o para regalar."
+      ],
+      [
+        "¿Qué necesidad o problema lleva a esa persona a elegir uno de sus productos?"
+      ],
+      [
+        "¿Qué dudas aparecen antes de comprar?",
+        "Y qué es lo que más preguntan en Mercado Libre."
+      ]
+    ]
+  },
+  {
+    "t": "Personalidad y tono",
+    "d": "Si TecnoTips habla igual en todos lados, el resto se ordena.",
+    "q": [
+      [
+        "¿Cómo describirías la personalidad de TecnoTips en tres palabras?"
+      ],
+      [
+        "¿Qué tres cosas TecnoTips nunca debería parecer?"
+      ],
+      [
+        "¿TecnoTips es más experta y técnica, o más cercana y cotidiana?",
+        "¿Cómo le habla a su cliente: vos, tú o usted?"
+      ],
+      [
+        "¿Qué marcas admiras, de cualquier rubro? ¿Qué te gusta de cada una?"
+      ]
+    ]
+  },
+  {
+    "t": "Lo que ya existe",
+    "d": "Necesitamos saber con qué archivos contamos y qué vale la pena rescatar.",
+    "files": "Logo en vectorial (AI, SVG o PDF), colores o piezas actuales: pega aquí un link de Google Drive, Dropbox o WeTransfer.",
+    "q": [
+      [
+        "¿Tienen el logo en archivo vectorial original?",
+        "¿Existen versiones horizontal, vertical o solo el ícono?"
+      ],
+      [
+        "¿Hay colores o tipografías definidos como oficiales, aunque sea de manera informal?"
+      ],
+      [
+        "De los artes que hoy usan en Mercado Libre, ¿qué te gusta y quieres conservar? ¿Qué cambiarías?"
+      ],
+      [
+        "Además del logo, ¿hay algo intocable?",
+        "Un color, una frase, un personaje, un formato."
+      ]
+    ]
+  },
+  {
+    "t": "Mercado Libre y canales",
+    "d": "Cada canal tiene reglas y formatos distintos. Con esto ordenamos el trabajo de la tienda.",
+    "q": [
+      [
+        "¿La tienda es oficial? ¿Cuántas publicaciones tiene hoy y quién las carga?"
+      ],
+      [
+        "¿Hay productos de TecnoTips publicados desde otra cuenta, como la de Seklou?",
+        "Si es así, ¿cuáles?"
+      ],
+      [
+        "¿Hay productos agotados o que hoy no están publicados y que igual quieras incluir en los videos y en los artes?"
+      ],
+      [
+        "¿Cómo agrupan hoy los colores de un mismo producto: una publicación por color o varias variantes en una sola?"
+      ],
+      [
+        "Además de Mercado Libre, ¿hay redes sociales activas u otros canales de venta?",
+        "¿Quién los administra?"
+      ]
+    ]
+  },
+  {
+    "t": "Imagen y videos",
+    "d": "Fotos, videos e imágenes con IA tienen que sentirse parte de la misma marca.",
+    "files": "Fotos de producto y tus referencias visuales: pega aquí links de Drive, Instagram, Pinterest o lo que uses.",
+    "q": [
+      [
+        "¿Dónde están las fotos de cada producto? ¿Están completas para todos los colores?"
+      ],
+      [
+        "¿Qué escenas, ambientes o personas quieres ver en los videos? ¿Y cuáles no?"
+      ],
+      [
+        "¿Hay productos con detalles que tengan que respetarse sí o sí?",
+        "Logos impresos, botones, medidas, accesorios incluidos."
+      ],
+      [
+        "¿Tienes referencias visuales que te gusten?",
+        "Imágenes, cuentas, campañas."
+      ]
+    ]
+  },
+  {
+    "t": "Forma de trabajo",
+    "d": "Fechas y aprobaciones definen el orden del trabajo.",
+    "q": [
+      [
+        "¿Quién aprueba las decisiones de marca y las piezas? ¿Una persona o varias?"
+      ],
+      [
+        "¿Qué fechas clave tenemos que respetar?",
+        "Lanzamientos de productos nuevos, Hot Sale, Black Friday, Cyber Monday."
+      ],
+      [
+        "Dentro de seis meses, ¿qué tendría que haber pasado para que digas que el proyecto funcionó?"
+      ]
+    ]
+  }
+];
+
+  var store={},ts={},dirty={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){store={};}
+  try{ts=JSON.parse(localStorage.getItem(KEY+'-t')||'{}')||{};}catch(e){ts={};}
+  try{dirty=JSON.parse(localStorage.getItem(KEY+'-d')||'{}')||{};}catch(e){dirty={};}
+  var savedEl=document.getElementById('saved');
+  function setStatus(t){savedEl.textContent=t;}
+
+  function base(k){return k.replace(/_u$/,'');}
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify(store));localStorage.setItem(KEY+'-t',JSON.stringify(ts));localStorage.setItem(KEY+'-d',JSON.stringify(dirty));return true;}catch(e){return false;}}
+  var saveT;
+  function saveLocal(){clearTimeout(saveT);saveT=setTimeout(function(){var ok=persist();if(!ENDPOINT)setStatus(ok?'Progreso guardado':'Sin guardado automático');},300);}
+
+  function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+  /* Registro de campos: clave, orden y texto de la pregunta (lo que llega a la planilla) */
+  var META=[{k:'nombre',ord:1,b:'Datos',p:'Tu nombre'},{k:'rol',ord:2,b:'Datos',p:'Tu rol'}];
+  var form=document.getElementById('form'),html='',total=0;
+  B.forEach(function(b,i){
+    var n=i+1;
+    html+='<section class="block" id="b'+n+'"><div class="bhead"><span class="n">'+n+' de '+B.length+'</span><h2>'+esc(b.t)+'</h2><p class="muted">'+esc(b.d)+'</p></div>';
+    b.q.forEach(function(q,j){
+      var id='q'+n+'_'+(j+1); total++;
+      META.push({k:id,ord:n*100+j+1,b:n+'. '+b.t,p:q[0]});
+      html+='<div class="q" data-q="'+id+'"><label class="t" for="'+id+'">'+esc(q[0])+'</label>'+(q[1]?'<p class="h">'+esc(q[1])+'</p>':'')+
+        '<textarea id="'+id+'" data-k="'+id+'"></textarea>'+
+        '<label class="unk"><input type="checkbox" id="'+id+'_u" data-u="'+id+'">Todavía no lo sé</label></div>';
+    });
+    if(b.files){var fid='f'+n;META.push({k:fid,ord:n*100+50,b:n+'. '+b.t,p:'Archivos y links: '+b.files});html+='<div class="files"><b>Archivos y links</b><p>'+esc(b.files)+'</p><textarea id="'+fid+'" data-k="'+fid+'" placeholder="https://"></textarea></div>';}
+    html+='</section>';
+  });
+  form.innerHTML=html;
+  var metaBy={};META.forEach(function(m){metaBy[m.k]=m;});
+
+  /* Respuestas de una versión anterior (sin fecha): se toman como cargadas ahora para que suban */
+  Object.keys(store).forEach(function(k){var b=base(k);if(metaBy[b]&&!ts[b]&&(store[k]===true||String(store[k]).trim())){ts[b]=Date.now();dirty[b]=ts[b];}});
+
+  function itemFor(k){var m=metaBy[k];return {k:k,ord:m.ord,bloque:m.b,pregunta:m.p,valor:store[k]||'',unk:!!store[k+'_u'],ts:ts[k]||0};}
+  function touch(k){ts[k]=Date.now();dirty[k]=ts[k];saveLocal();refresh();schedulePush(1500);}
+
+  /* Guardado en línea */
+  var inflight=false,pushT;
+  function schedulePush(d){clearTimeout(pushT);pushT=setTimeout(push,d);}
+  function pending(){return Object.keys(dirty).length;}
+  function push(){
+    if(!ENDPOINT||inflight||!pending())return;
+    inflight=true;setStatus('Guardando…');
+    var sent=Object.keys(dirty).filter(function(k){return metaBy[k];}).map(itemFor);
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',form:FORM,items:sent})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.ok)throw new Error('save');
+        sent.forEach(function(it){if(dirty[it.k]===it.ts)delete dirty[it.k];});
+        persist();
+        if(pending()){setStatus('Guardando…');schedulePush(500);}else setStatus('Guardado en línea');
+      })
+      .catch(function(){setStatus('Guardado en este dispositivo');schedulePush(15000);})
+      .then(function(){inflight=false;});
+  }
+  window.addEventListener('pagehide',function(){
+    if(!ENDPOINT||!pending()||!navigator.sendBeacon)return;
+    var sent=Object.keys(dirty).filter(function(k){return metaBy[k];}).map(itemFor);
+    try{navigator.sendBeacon(ENDPOINT,new Blob([JSON.stringify({action:'save',form:FORM,items:sent})],{type:'text/plain;charset=utf-8'}));}catch(e){}
+  });
+  window.addEventListener('online',function(){schedulePush(500);});
+
+  function apply(it){
+    var k=it.k,el=document.getElementById(k);
+    store[k]=it.valor||'';ts[k]=it.ts||0;
+    if(it.unk)store[k+'_u']=true;else delete store[k+'_u'];
+    if(el)el.value=store[k];
+    var cb=document.getElementById(k+'_u');
+    if(cb){cb.checked=!!it.unk;el.disabled=!!it.unk;}
+  }
+  function pull(){
+    if(!ENDPOINT)return;
+    setStatus('Cargando…');
+    fetch(ENDPOINT+'?action=load&form='+encodeURIComponent(FORM))
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.ok)throw new Error('load');
+        var onServer={};
+        (j.items||[]).forEach(function(it){
+          if(!metaBy[it.k])return;
+          onServer[it.k]=1;
+          var local=ts[it.k]||0,remote=it.ts||0;
+          if(remote>local)apply(it);
+          else if(local>remote)dirty[it.k]=local;
+        });
+        META.forEach(function(m){if(!onServer[m.k]&&!(m.k in dirty))dirty[m.k]=ts[m.k]||0;});
+        persist();refresh();
+        setStatus('Guardado en línea');
+        schedulePush(300);
+      })
+      .catch(function(){setStatus('Guardado en este dispositivo');schedulePush(15000);});
+  }
+
+  function refresh(){
+    var done=0;
+    document.querySelectorAll('.q').forEach(function(el){
+      var id=el.getAttribute('data-q'),ok=!!(store[id]&&store[id].trim())||!!store[id+'_u'];
+      el.classList.toggle('answered',ok); if(ok) done++;
+    });
+    var p=Math.round(done/total*100);
+    document.getElementById('fill').style.width=p+'%';
+    document.getElementById('pct').textContent=p+'%';
+    var msg=ENDPOINT?('Hola, completé el formulario de '+BRAND+'. Ya pueden ver mis respuestas.'):build(true);
+    document.getElementById('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
+  }
+  document.querySelectorAll('[data-k]').forEach(function(el){
+    var k=el.getAttribute('data-k'); if(store[k]) el.value=store[k];
+    el.addEventListener('input',function(){store[k]=el.value;touch(k);});
+  });
+  document.querySelectorAll('[data-u]').forEach(function(cb){
+    var k=cb.getAttribute('data-u'),ta=document.getElementById(k);
+    cb.checked=!!store[k+'_u']; ta.disabled=cb.checked;
+    cb.addEventListener('change',function(){store[k+'_u']=cb.checked;ta.disabled=cb.checked;touch(k);});
+  });
+
+  function build(short){
+    var o=[BRAND.toUpperCase()+' · Formulario de marca',''];
+    if(store.nombre) o.push('Nombre: '+store.nombre);
+    if(store.rol) o.push('Rol: '+store.rol);
+    B.forEach(function(b,i){
+      var n=i+1; o.push('','*'+n+'. '+b.t.toUpperCase()+'*');
+      b.q.forEach(function(q,j){
+        var id='q'+n+'_'+(j+1),a=store[id+'_u']?'Todavía no lo sé':((store[id]||'').trim()||'—');
+        if(short&&a==='—') return;
+        o.push('','• '+q[0],a);
+      });
+      if(b.files&&store['f'+n]&&store['f'+n].trim()) o.push('','Archivos y links: '+store['f'+n].trim());
+    });
+    return o.join('\n');
+  }
+  function toast(m){var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove();},1800);}
+  document.getElementById('copy').addEventListener('click',function(){
+    var txt=build(),out=document.getElementById('out');
+    function fb(){out.style.display='block';out.value=txt;out.focus();out.select();toast('Selecciona y copia');}
+    try{navigator.clipboard.writeText(txt).then(function(){toast('Respuestas copiadas');},fb);}catch(e){fb();}
+  });
+
+  if(ENDPOINT){
+    document.getElementById('how1').textContent='Tus respuestas se guardan solas y las puedes retomar cuando quieras, desde cualquier dispositivo.';
+    document.getElementById('how3').textContent='Tus respuestas llegan a Contentive a medida que las completas. Cuando termines, avísanos con un botón.';
+    document.getElementById('sendp').textContent='Tus respuestas ya llegan al equipo de Contentive mientras las completas. Cuando sientas que terminaste, avísanos con el botón. Si después recuerdas algo más, vuelve a este mismo link y sigue completando.';
+    document.getElementById('wa').textContent='Avisar por WhatsApp';
+  }
+  refresh();
+  pull();
+  if(!ENDPOINT)setStatus('Progreso guardado');
+})();
+</script>
+</body>
+</html>

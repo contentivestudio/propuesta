@@ -88,9 +88,9 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     <h1>Cuéntanos de Seklou<span>a tu ritmo.</span></h1>
     <p class="muted">Este formulario reúne todo lo que el equipo de Contentive necesita para construir el universo de la marca. No hay respuestas correctas y no hace falta escribir mucho: una idea o una frase alcanza.</p>
     <div class="how">
-      <div><b>Se guarda solo</b><p>Puedes cerrarlo y volver cuando quieras desde este mismo dispositivo.</p></div>
+      <div><b>Se guarda solo</b><p id="how1">Puedes cerrarlo y volver cuando quieras desde este mismo dispositivo.</p></div>
       <div><b>"Todavía no lo sé"</b><p>También es una respuesta válida y nos sirve.</p></div>
-      <div><b>Al final</b><p>Nos envías tus respuestas por WhatsApp con un solo botón.</p></div>
+      <div><b>Al final</b><p id="how3">Nos envías tus respuestas por WhatsApp con un solo botón.</p></div>
     </div>
     <div class="who">
       <label class="f" for="nombre">Tu nombre<input type="text" id="nombre" data-k="nombre" autocomplete="name"></label>
@@ -103,7 +103,7 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
   <section class="send" id="enviar">
     <span class="eyebrow">Último paso</span>
     <h2>Envíanos tus respuestas.</h2>
-    <p class="muted">Puedes enviarlas aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
+    <p class="muted" id="sendp">Puedes enviarlas aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
     <div class="btns">
       <a class="btn primary" id="wa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
       <button class="btn ghost" type="button" id="copy">Copiar respuestas</button>
@@ -127,6 +127,9 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
 (function(){
   var WA='5491135701336';
   var KEY='seklou-formulario-v1';
+  var FORM='seklou';
+  var BRAND='Seklou';
+  var ENDPOINT='';
   var B=[
     {t:'Negocio y rumbo',d:'El universo tiene que acompañar hacia dónde va Seklou, no solo describir dónde está hoy.',q:[
       ['¿Cómo nació Seklou y qué significa el nombre?'],
@@ -188,26 +191,101 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
       ['Dentro de seis meses, ¿qué tendría que haber pasado para que digas que el proyecto funcionó?']]}
   ];
 
-  var store={};
+  var store={},ts={},dirty={};
   try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){store={};}
-  var saveT,savedEl=document.getElementById('saved');
-  function save(){clearTimeout(saveT);saveT=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(store));savedEl.textContent='Progreso guardado';}catch(e){savedEl.textContent='Sin guardado automático';}},300);}
+  try{ts=JSON.parse(localStorage.getItem(KEY+'-t')||'{}')||{};}catch(e){ts={};}
+  try{dirty=JSON.parse(localStorage.getItem(KEY+'-d')||'{}')||{};}catch(e){dirty={};}
+  var savedEl=document.getElementById('saved');
+  function setStatus(t){savedEl.textContent=t;}
+
+  function base(k){return k.replace(/_u$/,'');}
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify(store));localStorage.setItem(KEY+'-t',JSON.stringify(ts));localStorage.setItem(KEY+'-d',JSON.stringify(dirty));return true;}catch(e){return false;}}
+  var saveT;
+  function saveLocal(){clearTimeout(saveT);saveT=setTimeout(function(){var ok=persist();if(!ENDPOINT)setStatus(ok?'Progreso guardado':'Sin guardado automático');},300);}
 
   function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+  /* Registro de campos: clave, orden y texto de la pregunta (lo que llega a la planilla) */
+  var META=[{k:'nombre',ord:1,b:'Datos',p:'Tu nombre'},{k:'rol',ord:2,b:'Datos',p:'Tu rol'}];
   var form=document.getElementById('form'),html='',total=0;
   B.forEach(function(b,i){
     var n=i+1;
     html+='<section class="block" id="b'+n+'"><div class="bhead"><span class="n">'+n+' de '+B.length+'</span><h2>'+esc(b.t)+'</h2><p class="muted">'+esc(b.d)+'</p></div>';
     b.q.forEach(function(q,j){
       var id='q'+n+'_'+(j+1); total++;
+      META.push({k:id,ord:n*100+j+1,b:n+'. '+b.t,p:q[0]});
       html+='<div class="q" data-q="'+id+'"><label class="t" for="'+id+'">'+esc(q[0])+'</label>'+(q[1]?'<p class="h">'+esc(q[1])+'</p>':'')+
         '<textarea id="'+id+'" data-k="'+id+'"></textarea>'+
         '<label class="unk"><input type="checkbox" id="'+id+'_u" data-u="'+id+'">Todavía no lo sé</label></div>';
     });
-    if(b.files){var fid='f'+n;html+='<div class="files"><b>Archivos y links</b><p>'+esc(b.files)+'</p><textarea id="'+fid+'" data-k="'+fid+'" placeholder="https://"></textarea></div>';}
+    if(b.files){var fid='f'+n;META.push({k:fid,ord:n*100+50,b:n+'. '+b.t,p:'Archivos y links: '+b.files});html+='<div class="files"><b>Archivos y links</b><p>'+esc(b.files)+'</p><textarea id="'+fid+'" data-k="'+fid+'" placeholder="https://"></textarea></div>';}
     html+='</section>';
   });
   form.innerHTML=html;
+  var metaBy={};META.forEach(function(m){metaBy[m.k]=m;});
+
+  /* Respuestas de una versión anterior (sin fecha): se toman como cargadas ahora para que suban */
+  Object.keys(store).forEach(function(k){var b=base(k);if(metaBy[b]&&!ts[b]&&(store[k]===true||String(store[k]).trim())){ts[b]=Date.now();dirty[b]=ts[b];}});
+
+  function itemFor(k){var m=metaBy[k];return {k:k,ord:m.ord,bloque:m.b,pregunta:m.p,valor:store[k]||'',unk:!!store[k+'_u'],ts:ts[k]||0};}
+  function touch(k){ts[k]=Date.now();dirty[k]=ts[k];saveLocal();refresh();schedulePush(1500);}
+
+  /* Guardado en línea */
+  var inflight=false,pushT;
+  function schedulePush(d){clearTimeout(pushT);pushT=setTimeout(push,d);}
+  function pending(){return Object.keys(dirty).length;}
+  function push(){
+    if(!ENDPOINT||inflight||!pending())return;
+    inflight=true;setStatus('Guardando…');
+    var sent=Object.keys(dirty).filter(function(k){return metaBy[k];}).map(itemFor);
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',form:FORM,items:sent})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.ok)throw new Error('save');
+        sent.forEach(function(it){if(dirty[it.k]===it.ts)delete dirty[it.k];});
+        persist();
+        if(pending()){setStatus('Guardando…');schedulePush(500);}else setStatus('Guardado en línea');
+      })
+      .catch(function(){setStatus('Guardado en este dispositivo');schedulePush(15000);})
+      .then(function(){inflight=false;});
+  }
+  window.addEventListener('pagehide',function(){
+    if(!ENDPOINT||!pending()||!navigator.sendBeacon)return;
+    var sent=Object.keys(dirty).filter(function(k){return metaBy[k];}).map(itemFor);
+    try{navigator.sendBeacon(ENDPOINT,new Blob([JSON.stringify({action:'save',form:FORM,items:sent})],{type:'text/plain;charset=utf-8'}));}catch(e){}
+  });
+  window.addEventListener('online',function(){schedulePush(500);});
+
+  function apply(it){
+    var k=it.k,el=document.getElementById(k);
+    store[k]=it.valor||'';ts[k]=it.ts||0;
+    if(it.unk)store[k+'_u']=true;else delete store[k+'_u'];
+    if(el)el.value=store[k];
+    var cb=document.getElementById(k+'_u');
+    if(cb){cb.checked=!!it.unk;el.disabled=!!it.unk;}
+  }
+  function pull(){
+    if(!ENDPOINT)return;
+    setStatus('Cargando…');
+    fetch(ENDPOINT+'?action=load&form='+encodeURIComponent(FORM))
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.ok)throw new Error('load');
+        var onServer={};
+        (j.items||[]).forEach(function(it){
+          if(!metaBy[it.k])return;
+          onServer[it.k]=1;
+          var local=ts[it.k]||0,remote=it.ts||0;
+          if(remote>local)apply(it);
+          else if(local>remote)dirty[it.k]=local;
+        });
+        META.forEach(function(m){if(!onServer[m.k]&&!(m.k in dirty))dirty[m.k]=ts[m.k]||0;});
+        persist();refresh();
+        setStatus('Guardado en línea');
+        schedulePush(300);
+      })
+      .catch(function(){setStatus('Guardado en este dispositivo');schedulePush(15000);});
+  }
 
   function refresh(){
     var done=0;
@@ -218,20 +296,21 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     var p=Math.round(done/total*100);
     document.getElementById('fill').style.width=p+'%';
     document.getElementById('pct').textContent=p+'%';
-    document.getElementById('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(build(true));
+    var msg=ENDPOINT?('Hola, completé el formulario de '+BRAND+'. Ya pueden ver mis respuestas.'):build(true);
+    document.getElementById('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
   }
   document.querySelectorAll('[data-k]').forEach(function(el){
     var k=el.getAttribute('data-k'); if(store[k]) el.value=store[k];
-    el.addEventListener('input',function(){store[k]=el.value;save();refresh();});
+    el.addEventListener('input',function(){store[k]=el.value;touch(k);});
   });
   document.querySelectorAll('[data-u]').forEach(function(cb){
     var k=cb.getAttribute('data-u'),ta=document.getElementById(k);
     cb.checked=!!store[k+'_u']; ta.disabled=cb.checked;
-    cb.addEventListener('change',function(){store[k+'_u']=cb.checked;ta.disabled=cb.checked;save();refresh();});
+    cb.addEventListener('change',function(){store[k+'_u']=cb.checked;ta.disabled=cb.checked;touch(k);});
   });
 
   function build(short){
-    var o=['SEKLOU · Formulario de marca',''];
+    var o=[BRAND.toUpperCase()+' · Formulario de marca',''];
     if(store.nombre) o.push('Nombre: '+store.nombre);
     if(store.rol) o.push('Rol: '+store.rol);
     B.forEach(function(b,i){
@@ -251,7 +330,16 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     function fb(){out.style.display='block';out.value=txt;out.focus();out.select();toast('Selecciona y copia');}
     try{navigator.clipboard.writeText(txt).then(function(){toast('Respuestas copiadas');},fb);}catch(e){fb();}
   });
+
+  if(ENDPOINT){
+    document.getElementById('how1').textContent='Tus respuestas se guardan solas y las puedes retomar cuando quieras, desde cualquier dispositivo.';
+    document.getElementById('how3').textContent='Tus respuestas llegan a Contentive a medida que las completas. Cuando termines, avísanos con un botón.';
+    document.getElementById('sendp').textContent='Tus respuestas ya llegan al equipo de Contentive mientras las completas. Cuando sientas que terminaste, avísanos con el botón. Si después recuerdas algo más, vuelve a este mismo link y sigue completando.';
+    document.getElementById('wa').textContent='Avisar por WhatsApp';
+  }
   refresh();
+  pull();
+  if(!ENDPOINT)setStatus('Progreso guardado');
 })();
 </script>
 </body>

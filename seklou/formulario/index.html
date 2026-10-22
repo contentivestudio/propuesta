@@ -389,21 +389,36 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     if(!window.jspdf)return Promise.reject(new Error('jspdf'));
     return getFonts().then(function(){return makePDF();});
   }
+  function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+  /* Si la respuesta del envío no se puede leer, se consulta si el script lo registró */
+  function verify(id,n){
+    return fetch(ENDPOINT+'?action=sent&id='+encodeURIComponent(id)).then(function(r){return r.json();}).then(function(j){
+      if(j&&j.sent)return true;
+      if(n>=5)return false;
+      return wait(2000).then(function(){return verify(id,n+1);});
+    },function(){
+      if(n>=5)return false;
+      return wait(2000).then(function(){return verify(id,n+1);});
+    });
+  }
   document.getElementById('wa').addEventListener('click',function(){
     if(busy)return;busy=true;var btn=this,label=btn.textContent;btn.textContent='Enviando…';hint.textContent='Preparando tu PDF…';
     function end(){busy=false;btn.textContent=label;}
+    var sid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    function ok(){try{localStorage.setItem(SENT,String(Date.now()));}catch(e){}showSent();toast('Enviado. ¡Gracias!');}
+    function fail(){hint.textContent='No pudimos confirmar el envío. Toca "Descargar PDF" y envíalo a hola@contentivestudio.com.';}
     push();
     prepare().then(function(blob){
       return blob.arrayBuffer().then(b64).then(function(pdf){
-        return fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'pdf',form:FORM,name:fileName(),quien:(store.nombre||'').trim(),rol:(store.rol||'').trim(),resp:doneCount()+' de '+total,pdf:pdf})});
+        hint.textContent='Enviando…';
+        var body=JSON.stringify({action:'pdf',form:FORM,id:sid,name:fileName(),quien:(store.nombre||'').trim(),rol:(store.rol||'').trim(),resp:doneCount()+' de '+total,pdf:pdf});
+        return fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body}).then(function(r){return r.json();}).then(function(j){return !!(j&&j.ok);},function(){return false;});
       });
-    }).then(function(r){return r.json();}).then(function(j){
-      if(!j||!j.ok)throw new Error('mail');
-      try{localStorage.setItem(SENT,String(Date.now()));}catch(e){}
-      showSent();toast('Enviado. ¡Gracias!');
-    }).catch(function(){
-      hint.textContent='No pudimos enviarlo automáticamente. Toca "Descargar PDF" y envíalo a hola@contentivestudio.com.';
-    }).then(end);
+    }).then(function(sent){
+      if(sent)return true;
+      hint.textContent='Confirmando el envío…';
+      return verify(sid,0);
+    },function(){return false;}).then(function(done){if(done)ok();else fail();}).then(end,end);
   });
   document.getElementById('dl').addEventListener('click',function(){
     prepare().then(function(blob){download(blob,fileName());toast('PDF descargado');}).catch(function(){toast('No pudimos generar el PDF. Intenta de nuevo.');});

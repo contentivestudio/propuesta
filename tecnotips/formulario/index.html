@@ -91,7 +91,7 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     <div class="how">
       <div><b>Se guarda solo</b><p id="how1">Puedes cerrarlo y volver cuando quieras desde este mismo dispositivo.</p></div>
       <div><b>"Todavía no lo sé"</b><p>También es una respuesta válida y nos sirve.</p></div>
-      <div><b>Al final</b><p id="how3">Al terminar, nos envías un PDF con tus respuestas por WhatsApp con un solo botón.</p></div>
+      <div><b>Al final</b><p id="how3">Al terminar, envías tus respuestas al equipo de Contentive con un solo botón.</p></div>
     </div>
     <div class="who">
       <label class="f" for="nombre">Tu nombre<input type="text" id="nombre" data-k="nombre" autocomplete="name"></label>
@@ -104,13 +104,13 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
   <section class="send" id="enviar">
     <span class="eyebrow">Último paso</span>
     <h2>Envíanos tus respuestas.</h2>
-    <p class="muted" id="sendp">Se genera un PDF con todas tus respuestas, ordenadas, para que nos lo envíes por WhatsApp aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
+    <p class="muted" id="sendp">Cuando sientas que terminaste, envía tus respuestas al equipo de Contentive con el botón. Puedes enviarlas aunque haya preguntas sin responder; si después recuerdas algo más, vuelve a este mismo link y envíalas otra vez.</p>
     <div class="btns">
-      <button class="btn primary" type="button" id="wa">Enviar por WhatsApp</button>
+      <button class="btn primary" type="button" id="wa">Enviar respuestas</button>
       <button class="btn ghost" type="button" id="dl">Descargar PDF</button>
     </div>
-    <p class="hint" id="shareHint">En el celular se abre tu menú para compartir: elige WhatsApp y el chat de Contentive. En computadora se descarga el PDF y te llevamos al chat para adjuntarlo.</p>
-    <p class="contact">Si prefieres el correo, descarga el PDF y envíalo a <b>hola@contentivestudio.com</b></p>
+    <p class="hint" id="shareHint">Se genera un PDF con todas tus respuestas, ordenadas, y le llega directo al equipo de Contentive.</p>
+    <p class="contact">Si algo falla, descarga el PDF y envíalo a <b>hola@contentivestudio.com</b></p>
   </section>
 
   <footer>Contentive Studio · Buenos Aires</footer>
@@ -127,8 +127,7 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
 <script src="../../vendor/jspdf.umd.min.js" defer></script>
 <script>
 (function(){
-  var WA='5491135701336';
-  var KEY='tecnotips-formulario-v1';
+    var KEY='tecnotips-formulario-v1';
   var FORM='tecnotips';
   var BRAND='TecnoTips';
   var ENDPOINT='https://script.google.com/macros/s/AKfycbxkrygBOYAqAyMrpWovfKFOuAsfE3vMZJDAbIyFPz4e63q2_IMVxQU1Mlbe0JP1Q364/exec';
@@ -459,29 +458,33 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
     setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
   }
-  var hint=document.getElementById('shareHint'),hintDefault=hint.innerHTML;
-  function waLink(){return 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hola, completé el formulario de '+BRAND+'. Te adjunto el PDF con mis respuestas.');}
-  function fallback(blob,name){
-    download(blob,name);
-    hint.innerHTML='Descargamos el PDF en tu dispositivo. Ahora <a href="'+waLink()+'" target="_blank" rel="noopener">abre el chat de WhatsApp con Contentive</a> y adjúntalo.';
-    toast('PDF descargado');
+  var hint=document.getElementById('shareHint'),SENT=KEY+'-sent';
+  function showSent(){
+    var t=0;try{t=+localStorage.getItem(SENT)||0;}catch(e){}
+    if(t){var d=new Date(t);hint.textContent='Enviado el '+d.toLocaleDateString('es-AR')+' a las '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false})+'. Si después recuerdas algo más, completa y vuelve a enviar.';}
   }
+  showSent();
+  function doneCount(){var c=0;B.forEach(function(b,i){b.q.forEach(function(q,j){var id='q'+(i+1)+'_'+(j+1);if((store[id]&&store[id].trim())||store[id+'_u'])c++;});});return c;}
   var busy=false;
   function prepare(){
     if(!window.jspdf)return Promise.reject(new Error('jspdf'));
     return getFonts().then(function(){return makePDF();});
   }
   document.getElementById('wa').addEventListener('click',function(){
-    if(busy)return;busy=true;var btn=this,label=btn.textContent;btn.textContent='Preparando PDF…';
+    if(busy)return;busy=true;var btn=this,label=btn.textContent;btn.textContent='Enviando…';hint.textContent='Preparando tu PDF…';
     function end(){busy=false;btn.textContent=label;}
+    push();
     prepare().then(function(blob){
-      var name=fileName(),file=new File([blob],name,{type:'application/pdf'});
-      var data={files:[file],title:BRAND+' · Formulario de marca',text:'Formulario de '+BRAND+' completado.'};
-      if(navigator.canShare&&navigator.canShare(data)){
-        return navigator.share(data).then(function(){hint.innerHTML=hintDefault;toast('Listo, gracias');},function(e){if(!e||e.name!=='AbortError')fallback(blob,name);});
-      }
-      fallback(blob,name);
-    }).catch(function(){toast('No pudimos generar el PDF. Intenta de nuevo.');}).then(end);
+      return blob.arrayBuffer().then(b64).then(function(pdf){
+        return fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'pdf',form:FORM,name:fileName(),quien:(store.nombre||'').trim(),rol:(store.rol||'').trim(),resp:doneCount()+' de '+total,pdf:pdf})});
+      });
+    }).then(function(r){return r.json();}).then(function(j){
+      if(!j||!j.ok)throw new Error('mail');
+      try{localStorage.setItem(SENT,String(Date.now()));}catch(e){}
+      showSent();toast('Enviado. ¡Gracias!');
+    }).catch(function(){
+      hint.textContent='No pudimos enviarlo automáticamente. Toca "Descargar PDF" y envíalo a hola@contentivestudio.com.';
+    }).then(end);
   });
   document.getElementById('dl').addEventListener('click',function(){
     prepare().then(function(blob){download(blob,fileName());toast('PDF descargado');}).catch(function(){toast('No pudimos generar el PDF. Intenta de nuevo.');});
@@ -489,8 +492,6 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
 
   if(ENDPOINT){
     document.getElementById('how1').textContent='Tus respuestas se guardan solas y las puedes retomar cuando quieras, desde cualquier dispositivo.';
-    document.getElementById('how3').textContent='Tus respuestas llegan a Contentive a medida que las completas. Al terminar, nos avisas enviándonos el PDF por WhatsApp.';
-    document.getElementById('sendp').textContent='Tus respuestas ya llegan al equipo de Contentive mientras las completas. Cuando sientas que terminaste, envíanos el PDF por WhatsApp. Si después recuerdas algo más, vuelve a este mismo link y sigue completando.';
   }
   refresh();
   pull();

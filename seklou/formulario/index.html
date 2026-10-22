@@ -65,7 +65,8 @@ section.block{display:flex;flex-direction:column;gap:22px;scroll-margin-top:24px
 .btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
 .btn:hover,.btn:focus-visible{outline:none;border-color:var(--lime)}
 .btn.primary:hover,.btn.primary:focus-visible{background:var(--lime);border-color:var(--lime)}
-#out{display:none;min-height:220px;font-size:.88rem}
+.hint{font-size:.92rem;color:var(--muted)}
+.hint a{color:var(--lime);font-weight:600}
 .contact{font-size:.92rem;color:var(--muted)}
 .contact b{color:var(--fg);user-select:all}
 footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -90,7 +91,7 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     <div class="how">
       <div><b>Se guarda solo</b><p id="how1">Puedes cerrarlo y volver cuando quieras desde este mismo dispositivo.</p></div>
       <div><b>"Todavía no lo sé"</b><p>También es una respuesta válida y nos sirve.</p></div>
-      <div><b>Al final</b><p id="how3">Nos envías tus respuestas por WhatsApp con un solo botón.</p></div>
+      <div><b>Al final</b><p id="how3">Al terminar, nos envías un PDF con tus respuestas por WhatsApp con un solo botón.</p></div>
     </div>
     <div class="who">
       <label class="f" for="nombre">Tu nombre<input type="text" id="nombre" data-k="nombre" autocomplete="name"></label>
@@ -103,13 +104,13 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
   <section class="send" id="enviar">
     <span class="eyebrow">Último paso</span>
     <h2>Envíanos tus respuestas.</h2>
-    <p class="muted" id="sendp">Puedes enviarlas aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
+    <p class="muted" id="sendp">Se genera un PDF con todas tus respuestas, ordenadas, para que nos lo envíes por WhatsApp aunque haya preguntas sin responder. Si después recuerdas algo más, vuelve a este formulario y envíalo otra vez.</p>
     <div class="btns">
-      <a class="btn primary" id="wa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-      <button class="btn ghost" type="button" id="copy">Copiar respuestas</button>
+      <button class="btn primary" type="button" id="wa">Enviar por WhatsApp</button>
+      <button class="btn ghost" type="button" id="dl">Descargar PDF</button>
     </div>
-    <textarea id="out" readonly aria-label="Respuestas para copiar"></textarea>
-    <p class="contact">Si prefieres el correo, copia tus respuestas y envíalas a <b>hola@contentivestudio.com</b></p>
+    <p class="hint" id="shareHint">En el celular se abre tu menú para compartir: elige WhatsApp y el chat de Contentive. En computadora se descarga el PDF y te llevamos al chat para adjuntarlo.</p>
+    <p class="contact">Si prefieres el correo, descarga el PDF y envíalo a <b>hola@contentivestudio.com</b></p>
   </section>
 
   <footer>Contentive Studio · Buenos Aires</footer>
@@ -123,6 +124,7 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
   </div>
 </div>
 
+<script src="../../vendor/jspdf.umd.min.js" defer></script>
 <script>
 (function(){
   var WA='5491135701336';
@@ -296,8 +298,6 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     var p=Math.round(done/total*100);
     document.getElementById('fill').style.width=p+'%';
     document.getElementById('pct').textContent=p+'%';
-    var msg=ENDPOINT?('Hola, completé el formulario de '+BRAND+'. Ya pueden ver mis respuestas.'):build(true);
-    document.getElementById('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
   }
   document.querySelectorAll('[data-k]').forEach(function(el){
     var k=el.getAttribute('data-k'); if(store[k]) el.value=store[k];
@@ -309,33 +309,107 @@ footer{text-align:center;font:600 .8rem/1.4 var(--cond);letter-spacing:.12em;tex
     cb.addEventListener('change',function(){store[k+'_u']=cb.checked;ta.disabled=cb.checked;touch(k);});
   });
 
-  function build(short){
-    var o=[BRAND.toUpperCase()+' · Formulario de marca',''];
-    if(store.nombre) o.push('Nombre: '+store.nombre);
-    if(store.rol) o.push('Rol: '+store.rol);
-    B.forEach(function(b,i){
-      var n=i+1; o.push('','*'+n+'. '+b.t.toUpperCase()+'*');
-      b.q.forEach(function(q,j){
-        var id='q'+n+'_'+(j+1),a=store[id+'_u']?'Todavía no lo sé':((store[id]||'').trim()||'—');
-        if(short&&a==='—') return;
-        o.push('','• '+q[0],a);
-      });
-      if(b.files&&store['f'+n]&&store['f'+n].trim()) o.push('','Archivos y links: '+store['f'+n].trim());
-    });
-    return o.join('\n');
+  function toast(m){var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove();},2400);}
+
+  /* PDF con todas las preguntas y respuestas, armado en el dispositivo */
+  var BASE='../../vendor/',fonts=null,fontsP=null;
+  function b64(buf){var a=new Uint8Array(buf),s='',n=0x8000;for(var i=0;i<a.length;i+=n)s+=String.fromCharCode.apply(null,a.subarray(i,i+n));return btoa(s);}
+  function getFonts(){
+    if(fonts)return Promise.resolve(fonts);
+    if(!fontsP){
+      fontsP=Promise.all(['DejaVuSans.ttf','DejaVuSans-Bold.ttf'].map(function(f){
+        return fetch(BASE+f).then(function(r){if(!r.ok)throw new Error(f);return r.arrayBuffer();});
+      })).then(function(r){fonts={n:b64(r[0]),b:b64(r[1])};return fonts;},function(e){fontsP=null;throw e;});
+    }
+    return fontsP;
   }
-  function toast(m){var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove();},1800);}
-  document.getElementById('copy').addEventListener('click',function(){
-    var txt=build(),out=document.getElementById('out');
-    function fb(){out.style.display='block';out.value=txt;out.focus();out.select();toast('Selecciona y copia');}
-    try{navigator.clipboard.writeText(txt).then(function(){toast('Respuestas copiadas');},fb);}catch(e){fb();}
+  setTimeout(function(){getFonts().catch(function(){});},2500);
+
+  function makePDF(){
+    var doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'});
+    doc.addFileToVFS('DejaVuSans.ttf',fonts.n);doc.addFont('DejaVuSans.ttf','DejaVu','normal');
+    doc.addFileToVFS('DejaVuSans-Bold.ttf',fonts.b);doc.addFont('DejaVuSans-Bold.ttf','DejaVu','bold');
+    var W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),M=54,CW=W-2*M,y=M;
+    var OR=[217,122,14],INK=[20,20,20],GR=[120,116,110];
+    function lines(txt,size,style){doc.setFont('DejaVu',style);doc.setFontSize(size);return doc.splitTextToSize(txt,CW);}
+    function put(ls,size,style,col){
+      doc.setFont('DejaVu',style);doc.setFontSize(size);doc.setTextColor(col[0],col[1],col[2]);
+      var lh=size*1.45;
+      ls.forEach(function(l){if(y+lh>H-M){doc.addPage();y=M;}doc.text(l,M,y+size);y+=lh;});
+    }
+    function item(qt,at,col){
+      var ql=lines(qt,10.5,'bold'),al=lines(at,10.5,'normal'),lh=10.5*1.45;
+      if(y+ql.length*lh+Math.min(2,al.length)*lh>H-M){doc.addPage();y=M;}
+      put(ql,10.5,'bold',INK);y+=2;put(al,10.5,'normal',col);y+=10;
+    }
+    var done=0;
+    B.forEach(function(b,i){b.q.forEach(function(q,j){var id='q'+(i+1)+'_'+(j+1);if((store[id]&&store[id].trim())||store[id+'_u'])done++;});});
+
+    put(['CONTENTIVE STUDIO · FORMULARIO DE MARCA'],8.5,'bold',OR);y+=2;
+    put([BRAND],26,'bold',INK);y+=4;
+    var meta=[];
+    if(store.nombre&&store.nombre.trim())meta.push('Nombre: '+store.nombre.trim());
+    if(store.rol&&store.rol.trim())meta.push('Rol: '+store.rol.trim());
+    meta.push('Fecha: '+new Date().toLocaleDateString('es-AR'));
+    meta.push(done+' de '+total+' preguntas respondidas');
+    meta.forEach(function(m){put(lines(m,10,'normal'),10,'normal',GR);});
+
+    B.forEach(function(b,i){
+      var n=i+1;y+=16;
+      if(y+70>H-M){doc.addPage();y=M;}
+      put([n+'. '+b.t],15,'bold',OR);
+      doc.setDrawColor(OR[0],OR[1],OR[2]);doc.setLineWidth(1);doc.line(M,y,W-M,y);y+=12;
+      b.q.forEach(function(q,j){
+        var id='q'+n+'_'+(j+1),unk=!!store[id+'_u'],a=(store[id]||'').trim();
+        item(q[0],unk?'Todavía no lo sé':(a||'Sin responder'),(unk||!a)?GR:INK);
+      });
+      if(b.files){var f=(store['f'+n]||'').trim();if(f)item('Archivos y links',f,INK);}
+    });
+
+    var pages=doc.getNumberOfPages();
+    for(var p=1;p<=pages;p++){
+      doc.setPage(p);doc.setFont('DejaVu','normal');doc.setFontSize(8);doc.setTextColor(GR[0],GR[1],GR[2]);
+      doc.text('Contentive Studio · Buenos Aires  —  '+p+' / '+pages,W/2,H-28,{align:'center'});
+    }
+    return doc.output('blob');
+  }
+  function fileName(){var who=(store.nombre||'').trim().replace(/[\\\/:*?"<>|]+/g,'');return BRAND+' - Formulario de marca'+(who?' - '+who:'')+'.pdf';}
+  function download(blob,name){
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
+  }
+  var hint=document.getElementById('shareHint'),hintDefault=hint.innerHTML;
+  function waLink(){return 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hola, completé el formulario de '+BRAND+'. Te adjunto el PDF con mis respuestas.');}
+  function fallback(blob,name){
+    download(blob,name);
+    hint.innerHTML='Descargamos el PDF en tu dispositivo. Ahora <a href="'+waLink()+'" target="_blank" rel="noopener">abre el chat de WhatsApp con Contentive</a> y adjúntalo.';
+    toast('PDF descargado');
+  }
+  var busy=false;
+  function prepare(){
+    if(!window.jspdf)return Promise.reject(new Error('jspdf'));
+    return getFonts().then(function(){return makePDF();});
+  }
+  document.getElementById('wa').addEventListener('click',function(){
+    if(busy)return;busy=true;var btn=this,label=btn.textContent;btn.textContent='Preparando PDF…';
+    function end(){busy=false;btn.textContent=label;}
+    prepare().then(function(blob){
+      var name=fileName(),file=new File([blob],name,{type:'application/pdf'});
+      var data={files:[file],title:BRAND+' · Formulario de marca',text:'Formulario de '+BRAND+' completado.'};
+      if(navigator.canShare&&navigator.canShare(data)){
+        return navigator.share(data).then(function(){hint.innerHTML=hintDefault;toast('Listo, gracias');},function(e){if(!e||e.name!=='AbortError')fallback(blob,name);});
+      }
+      fallback(blob,name);
+    }).catch(function(){toast('No pudimos generar el PDF. Intenta de nuevo.');}).then(end);
+  });
+  document.getElementById('dl').addEventListener('click',function(){
+    prepare().then(function(blob){download(blob,fileName());toast('PDF descargado');}).catch(function(){toast('No pudimos generar el PDF. Intenta de nuevo.');});
   });
 
   if(ENDPOINT){
     document.getElementById('how1').textContent='Tus respuestas se guardan solas y las puedes retomar cuando quieras, desde cualquier dispositivo.';
-    document.getElementById('how3').textContent='Tus respuestas llegan a Contentive a medida que las completas. Cuando termines, avísanos con un botón.';
-    document.getElementById('sendp').textContent='Tus respuestas ya llegan al equipo de Contentive mientras las completas. Cuando sientas que terminaste, avísanos con el botón. Si después recuerdas algo más, vuelve a este mismo link y sigue completando.';
-    document.getElementById('wa').textContent='Avisar por WhatsApp';
+    document.getElementById('how3').textContent='Tus respuestas llegan a Contentive a medida que las completas. Al terminar, nos avisas enviándonos el PDF por WhatsApp.';
+    document.getElementById('sendp').textContent='Tus respuestas ya llegan al equipo de Contentive mientras las completas. Cuando sientas que terminaste, envíanos el PDF por WhatsApp. Si después recuerdas algo más, vuelve a este mismo link y sigue completando.';
   }
   refresh();
   pull();

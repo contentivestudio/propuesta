@@ -9,18 +9,23 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Google+Sans+Flex:wght@400;500;700&display=swap">
 <style>
-/* Layout: una columna editorial oscura, bloques que se leen en el celular de arriba hacia abajo; cifras grandes como protagonistas */
+/* Brand Book Contentive: amarillo #FFC705, negro cálido #141414, blanco, azul noche #011C25; títulos Anton (sustituto web de Steelfish), cuerpo Google Sans Flex.
+   Layout: una columna editorial oscura, bloques que se leen en el celular de arriba hacia abajo; cifras grandes como protagonistas */
 :root{
-  --bg:#0e0e0e; --surface:#171615; --line:#2b2926;
-  --fg:#f0ede8; --muted:#a8a29a;
-  --accent:#F5A623; --lime:#B8E04A; --on-accent:#0e0e0e;
-  --display:"Archivo Black","Arial Black",Impact,sans-serif;
-  --cond:"Barlow Condensed","Arial Narrow",sans-serif;
-  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+  --bg:#141414; --surface:#011C25; --line:#2a2a2a;
+  --fg:#FFFFFF; --muted:#c9c6bd;
+  --accent:#FFC705; --lime:#FFC705; --on-accent:#141414;
+  --display:"Anton","Arial Narrow",Impact,sans-serif;
+  --cond:"Anton","Arial Narrow",Impact,sans-serif;
+  --body:"Google Sans Flex","DM Sans",system-ui,sans-serif;
   color-scheme:dark;
+  font-synthesis-weight:none;
 }
+.brief,.acct,.count.wide{border-color:#0f3442}
+h3,.eyebrow,.chip,.count span,.wk,.btn,.lbl{font-weight:400!important;letter-spacing:.04em}
+h2,.hero h1{letter-spacing:.005em}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
 .wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
